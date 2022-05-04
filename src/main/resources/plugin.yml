@@ -7,3 +7,4 @@ author: TomasGnG
 commands:
   tommygenerator:
     aliases: tg
+    permission: tommygenerator.use
