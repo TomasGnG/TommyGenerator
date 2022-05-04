@@ -1,0 +1,10 @@
+name: TommyGenerator
+version: 1.0
+api-version: 1.18
+main: com.tomasgng.TommyGenerator
+author: TomasGnG
+
+commands:
+  tommygenerator:
+    aliases: tg
+  tpworld:
