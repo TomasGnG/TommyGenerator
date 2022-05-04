@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 public class InventoryClickListener implements Listener {
@@ -71,21 +72,32 @@ public class InventoryClickListener implements Listener {
         }
 
         if(event.getInventory() != null && event.getInventory().getType().equals(InventoryType.ANVIL)) {
-            var aSlot1 = event.getInventory().getItem(0);
+            /*var aSlot1 = event.getInventory().getItem(0);
             var aSlot2 = event.getInventory().getItem(1);
             var aSlot3 = event.getInventory().getItem(2);
-            if (aSlot1 != null || aSlot2 != null || aSlot3 != null) {
-                if(aSlot1.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)
-                    || aSlot2.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)
-                    || aSlot3.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
-                    event.setCancelled(true);
-                    if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
-                        var itemR = event.getCurrentItem();
-                        event.getClickedInventory().clear();
-                        TommyGenerator.getInstance().getGuiManager().openWorldCreatorInventory((Player) event.getWhoClicked(), itemR.getItemMeta().getDisplayName());
+
+             */
+            for (int i = 0; i < 3; i++) {
+                if(event.getInventory().getItem(i) != null) {
+                    if(event.getInventory().getItem(i).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+                        event.setCancelled(true);
+                        if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+                            var itemR = event.getCurrentItem();
+                            event.getClickedInventory().clear();
+                            TommyGenerator.getInstance().getGuiManager().openWorldCreatorInventory((Player) event.getWhoClicked(), itemR.getItemMeta().getDisplayName());
+                        }
                     }
                 }
             }
+            /*if (aSlot1 != null || aSlot2 != null || aSlot3 != null) {
+                if(aSlot1.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)
+                    || aSlot2.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)
+                    || aSlot3.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+
+                }
+            }
+
+             */
 
 
         }

@@ -25,7 +25,7 @@ public class WorldManager {
                 cfg.set("Worlds", new ArrayList<String>());
                 var comments = new ArrayList<String>();
                 comments.add("#DO NOT CHANGE ANYTHING HERE!!!");
-                cfg.setInlineComments("Worlds", comments);
+                cfg.setComments("Worlds", comments);
                 save();
             } catch (IOException e) {}
         }

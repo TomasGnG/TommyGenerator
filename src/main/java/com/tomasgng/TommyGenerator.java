@@ -1,12 +1,11 @@
 package com.tomasgng;
 
 import com.tomasgng.commands.TommyGeneratorCommand;
-import com.tomasgng.commands.TpCMD;
 import com.tomasgng.listeners.InventoryClickListener;
+import com.tomasgng.listeners.InventoryCloseListener;
 import com.tomasgng.utils.GUIManager;
 import com.tomasgng.utils.WorldManager;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.entity.SpawnCategory;
@@ -25,8 +24,8 @@ public class TommyGenerator extends JavaPlugin {
         guiManager = new GUIManager();
 
         getCommand("tommygenerator").setExecutor(new TommyGeneratorCommand());
-        getCommand("tpworld").setExecutor(new TpCMD());
         Bukkit.getPluginManager().registerEvents(new InventoryClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new InventoryCloseListener(), this);
 
         WorldCreator worldCreator = WorldCreator.name("BeispielsWelt");
         worldCreator.type(WorldType.FLAT);
