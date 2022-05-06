@@ -94,8 +94,8 @@ public class GUIManager {
         var inventory = Bukkit.createInventory(null, 2*9, Component.text("§2Choose your world type.."));
 
         var normalWorld = new ItemBuilder(Material.GRASS_BLOCK).setKey("worldCreatorInv-normalWorld").setDisplayName("§aNormal").build();
-        var netherWorld = new ItemBuilder(Material.GRASS_BLOCK).setKey("worldCreatorInv-netherWorld").setDisplayName("§cNether").build();
-        var endWorld = new ItemBuilder(Material.GRASS_BLOCK).setKey("worldCreatorInv-endWorld").setDisplayName("§fEnd").build();
+        var netherWorld = new ItemBuilder(Material.NETHERRACK).setKey("worldCreatorInv-netherWorld").setDisplayName("§cNether").build();
+        var endWorld = new ItemBuilder(Material.END_STONE).setKey("worldCreatorInv-endWorld").setDisplayName("§fEnd").build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
