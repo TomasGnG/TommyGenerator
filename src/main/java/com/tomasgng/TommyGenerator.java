@@ -26,11 +26,6 @@ public class TommyGenerator extends JavaPlugin {
         getCommand("tommygenerator").setExecutor(new TommyGeneratorCommand());
         Bukkit.getPluginManager().registerEvents(new InventoryClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryCloseListener(), this);
-
-        WorldCreator worldCreator = WorldCreator.name("BeispielsWelt");
-        worldCreator.type(WorldType.FLAT);
-        worldCreator.createWorld().setSpawnLimit(SpawnCategory.ANIMAL, 0);
-        worldCreator.createWorld().setSpawnLimit(SpawnCategory.MONSTER, 0);
     }
 
     public static TommyGenerator getInstance() {
