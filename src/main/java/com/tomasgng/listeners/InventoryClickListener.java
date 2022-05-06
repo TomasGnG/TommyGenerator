@@ -69,14 +69,13 @@ public class InventoryClickListener implements Listener {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.THE_END);
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-lockWeatherItem"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                TommyGenerator.getInstance().getWorldManager().lockCurrentWeather(player, world);
+            }
         }
 
         if(event.getInventory() != null && event.getInventory().getType().equals(InventoryType.ANVIL)) {
-            /*var aSlot1 = event.getInventory().getItem(0);
-            var aSlot2 = event.getInventory().getItem(1);
-            var aSlot3 = event.getInventory().getItem(2);
-
-             */
             for (int i = 0; i < 3; i++) {
                 if(event.getInventory().getItem(i) != null) {
                     if(event.getInventory().getItem(i).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
@@ -89,16 +88,6 @@ public class InventoryClickListener implements Listener {
                     }
                 }
             }
-            /*if (aSlot1 != null || aSlot2 != null || aSlot3 != null) {
-                if(aSlot1.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)
-                    || aSlot2.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)
-                    || aSlot3.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
-
-                }
-            }
-
-             */
-
 
         }
 
@@ -133,15 +122,5 @@ public class InventoryClickListener implements Listener {
 
             }
         }
-    }
-
-    @EventHandler
-    public void onChat(AsyncChatEvent event) {
-        //event.message(Component.text(event.getPlayer().getName() + " §8-> §a").append(event.message()));
-        event.renderer((source, sourceDisplayName, message, viewer) -> sourceDisplayName
-                .append(Component
-                        .text(" > "))
-                .append(message)
-        );
     }
 }

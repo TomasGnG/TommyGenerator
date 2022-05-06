@@ -6,9 +6,6 @@ import com.tomasgng.listeners.InventoryCloseListener;
 import com.tomasgng.utils.GUIManager;
 import com.tomasgng.utils.WorldManager;
 import org.bukkit.Bukkit;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
-import org.bukkit.entity.SpawnCategory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TommyGenerator extends JavaPlugin {

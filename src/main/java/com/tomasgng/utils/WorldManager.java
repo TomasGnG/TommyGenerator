@@ -103,4 +103,14 @@ public class WorldManager {
         TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
     }
 
+    public void lockCurrentWeather(Player player, World world) {
+        if(world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE).booleanValue()) {
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
+            return;
+        }
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, true);
+        TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
+    }
+
 }
