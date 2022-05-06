@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SpawnCategory;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,6 +117,24 @@ public class WorldManager {
     public void setWorldSpawn(Player player, World world) {
         world.setSpawnLocation(player.getLocation());
         player.sendMessage("§aWorld spawn was set to your location!");
+    }
+
+    public void toggleAnimalSpawning(Player player, World world) {
+        var currentSpawnLimit = world.getSpawnLimit(SpawnCategory.ANIMAL);
+        if(currentSpawnLimit != 0) {
+            world.setSpawnLimit(SpawnCategory.ANIMAL, 0);
+            player.sendMessage("§aAnimals won't spawn naturally.");
+            return;
+        }
+        world.setSpawnLimit(SpawnCategory.ANIMAL, 70);
+        player.sendMessage("§aAnimals will spawn naturally.");
+    }
+
+    public boolean animalSpawning(World world) {
+        if(world.getSpawnLimit(SpawnCategory.ANIMAL) == 0) {
+            return false;
+        }
+        return true;
     }
 
 }
