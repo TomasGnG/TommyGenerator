@@ -73,6 +73,10 @@ public class InventoryClickListener implements Listener {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getWorldManager().lockCurrentWeather(player, world);
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-setWorldSpawnItem"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                TommyGenerator.getInstance().getWorldManager().setWorldSpawn(player, world);
+            }
         }
 
         if(event.getInventory() != null && event.getInventory().getType().equals(InventoryType.ANVIL)) {

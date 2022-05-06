@@ -113,4 +113,9 @@ public class WorldManager {
         TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
     }
 
+    public void setWorldSpawn(Player player, World world) {
+        world.setSpawnLocation(player.getLocation());
+        player.sendMessage("§aWorld spawn was set to your location!");
+    }
+
 }

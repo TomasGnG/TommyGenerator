@@ -79,7 +79,7 @@ public class GUIManager {
         var tpItem = new ItemBuilder(Material.ENDER_PEARL).setKey("worldEditInv-tpItem").setDisplayName("§aTeleport to the world").setLore("§8§o→ Teleport to the world spawn").build();
         var lockTimeItem = new ItemBuilder(Material.DAYLIGHT_DETECTOR).setKey("worldEditInv-lockTimeItem").setDisplayName("§aDaylight cycle").setLore("§8§o→ Switches the daylight cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE).booleanValue()).build();
         var lockWeatherItem = new ItemBuilder(Material.WATER_BUCKET).setKey("worldEditInv-lockWeatherItem").setDisplayName("§aWeather cycle").setLore("§8§o→ Switches the weather cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE).booleanValue()).build();
-
+        var setWorldSpawnItem = new ItemBuilder(Material.WHITE_BED).setKey("worldEditInv-setWorldSpawnItem").setDisplayName("§aSet world spawn").setLore("§8§o→ Sets the world spawn to your current location").build();
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
         }
@@ -88,6 +88,7 @@ public class GUIManager {
         inventory.setItem(0, tpItem);
         inventory.setItem(1, lockTimeItem);
         inventory.setItem(2, lockWeatherItem);
+        inventory.setItem(3, setWorldSpawnItem);
 
         player.openInventory(inventory);
     }
