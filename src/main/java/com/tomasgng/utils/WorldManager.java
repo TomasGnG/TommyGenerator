@@ -126,12 +126,30 @@ public class WorldManager {
             player.sendMessage("§aAnimals won't spawn naturally.");
             return;
         }
-        world.setSpawnLimit(SpawnCategory.ANIMAL, 70);
+        world.setSpawnLimit(SpawnCategory.ANIMAL, 10);
         player.sendMessage("§aAnimals will spawn naturally.");
     }
 
     public boolean animalSpawning(World world) {
         if(world.getSpawnLimit(SpawnCategory.ANIMAL) == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public void toggleMonsterSpawning(Player player, World world) {
+        var currentSpawnLimit = world.getSpawnLimit(SpawnCategory.MONSTER);
+        if(currentSpawnLimit != 0) {
+            world.setSpawnLimit(SpawnCategory.MONSTER, 0);
+            player.sendMessage("§aMonsters won't spawn naturally.");
+            return;
+        }
+        world.setSpawnLimit(SpawnCategory.MONSTER, 70);
+        player.sendMessage("§aMonsters will spawn naturally.");
+    }
+
+    public boolean monsterSpawning(World world) {
+        if(world.getSpawnLimit(SpawnCategory.MONSTER) == 0) {
             return false;
         }
         return true;
