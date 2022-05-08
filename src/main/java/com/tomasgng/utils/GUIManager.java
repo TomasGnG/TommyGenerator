@@ -5,7 +5,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -121,12 +120,10 @@ public class GUIManager {
     }
 
     public void openWorldCreatorInventoryWorldNameInput(Player player) {
-        //var inventory = Bukkit.createInventory(null, InventoryType.ANVIL, Component.text("Choose your world name.."));
         HumanEntity humanEntity = player;
         humanEntity.openAnvil(humanEntity.getLocation(), true);
 
         humanEntity.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldCreatorInvWorldNameInput-paperItem").setDisplayName("Your world name").build());
 
-        //player.openInventory(inventory);
     }
 }
