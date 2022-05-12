@@ -1,10 +1,7 @@
 package com.tomasgng.utils;
 
 import com.tomasgng.TommyGenerator;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SpawnCategory;
@@ -167,5 +164,30 @@ public class WorldManager {
 
     public boolean allowedPvP(World world) {
         return world.getPVP();
+    }
+
+    public void toggleDifficulty(Player player, World world) {
+        switch (world.getDifficulty()) {
+            case PEACEFUL:
+                world.setDifficulty(Difficulty.EASY);
+                player.sendMessage("§aNew difficulty: §2" + Difficulty.EASY.name());
+                break;
+            case EASY:
+                world.setDifficulty(Difficulty.NORMAL);
+                player.sendMessage("§aNew difficulty: §2" + Difficulty.NORMAL.name());
+                break;
+            case NORMAL:
+                world.setDifficulty(Difficulty.HARD);
+                player.sendMessage("§aNew difficulty: §2" + Difficulty.HARD.name());
+                break;
+            case HARD:
+                world.setDifficulty(Difficulty.PEACEFUL);
+                player.sendMessage("§aNew difficulty: §2" + Difficulty.PEACEFUL.name());
+                break;
+        }
+    }
+
+    public String getDifficulty(World world) {
+        return world.getDifficulty().name();
     }
 }

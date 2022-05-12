@@ -44,7 +44,7 @@ public class GUIManager {
                 weather = "§cStorm/Raining";
             }
             String time;
-            if(worldList.get(i).getTime() < 12000){
+            if(worldList.get(i).isDayTime()){
                 time = "§aDay";
             } else {
                 time = "§cNight";
@@ -82,6 +82,7 @@ public class GUIManager {
         var setAnimalSpawningItem = new SkullBuilder().setKey("worldEditInv-setAnimalSpawningItem").setDisplayName("§aAnimal spawning").setLore("§8§o→ Toggles the spawning of animals like cows etc.", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().animalSpawning(world)).setPlayerProfileByURL("https://textures.minecraft.net/texture/c5a9cd58d4c67bccc8fb1f5f756a2d381c9ffac2924b7f4cb71aa9fa13fb5c").build();
         var setMonsterSpawningItem = new ItemBuilder(Material.CREEPER_HEAD).setKey("worldEditInv-setMonsterSpawningItem").setDisplayName("§aMonster spawning").setLore("§8§o→ Toggles the spawning of monsters like zombies etc.", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().monsterSpawning(world)).build();
         var togglePvPItem = new ItemBuilder(Material.IRON_SWORD).setKey("worldEditInv-togglePvPItem").setDisplayName("§aPvP").setLore("§8§o→ Toggles the hitting of other players", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().allowedPvP(world)).build();
+        var toggleDifficulty = new ItemBuilder(Material.WOODEN_SWORD).setKey("worldEditInv-toggleDifficulty").setDisplayName("§aDifficulty").setLore("§8§o→ Toggles the difficulty of the world", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().getDifficulty(world)).build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
@@ -95,6 +96,7 @@ public class GUIManager {
         inventory.setItem(4, setAnimalSpawningItem);
         inventory.setItem(5, setMonsterSpawningItem);
         inventory.setItem(6, togglePvPItem);
+        inventory.setItem(7, toggleDifficulty);
 
         player.openInventory(inventory);
     }
