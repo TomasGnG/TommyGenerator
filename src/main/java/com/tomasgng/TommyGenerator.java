@@ -1,7 +1,6 @@
 package com.tomasgng;
 
 import com.tomasgng.commands.TommyGeneratorCommand;
-import com.tomasgng.listeners.EntityDamageByEntityListener;
 import com.tomasgng.listeners.InventoryClickListener;
 import com.tomasgng.listeners.InventoryCloseListener;
 import com.tomasgng.utils.GUIManager;
@@ -31,7 +30,6 @@ public class TommyGenerator extends JavaPlugin {
 
         manager.registerEvents(new InventoryClickListener(), this);
         manager.registerEvents(new InventoryCloseListener(), this);
-        manager.registerEvents(new EntityDamageByEntityListener(), this);
     }
 
     public static TommyGenerator getInstance() {

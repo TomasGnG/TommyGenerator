@@ -75,17 +75,6 @@ public class WorldManager {
         }
     }
 
-    private void editWorldFromDenyPvPList(String world) {
-        if(cfg.isSet("DenyPvP." + world)) {
-            cfg.set("DenyPvP." + world, null);
-            save();
-            return;
-        }
-        cfg.set("DenyPvP." + world, "");
-        save();
-        return;
-    }
-
     // World Creator
 
     public void createNewWorld(Player player, String worldName, World.Environment environment) {
@@ -167,18 +156,16 @@ public class WorldManager {
     }
 
     public void togglePvP(Player player, World world) {
-        editWorldFromDenyPvPList(world.getName());
         if(allowedPvP(world)) {
-            player.sendMessage("§aPvP is now activated!");
+            world.setPVP(false);
+            player.sendMessage("§aPvP is now deactivated!");
             return;
         }
-        player.sendMessage("§aPvP is now deactivated!");
+        world.setPVP(true);
+        player.sendMessage("§aPvP is now activated!");
     }
 
     public boolean allowedPvP(World world) {
-        if(cfg.isSet("DenyPvP." + world.getName())) {
-            return false;
-        }
-        return true;
+        return world.getPVP();
     }
 }
