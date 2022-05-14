@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SpawnCategory;
 
-import javax.print.DocFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

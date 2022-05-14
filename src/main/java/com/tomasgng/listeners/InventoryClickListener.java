@@ -1,7 +1,6 @@
 package com.tomasgng.listeners;
 
 import com.tomasgng.TommyGenerator;
-import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,23 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 public class InventoryClickListener implements Listener {
-
-    // ANVIL INV
-    /*@EventHandler
-    public void onAnvil(PrepareAnvilEvent event) {
-        if(event.getInventory().getItem(0).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
-            if(event.getResult() != null || event.getResult().getItemMeta() != null) {
-                event.getViewers().stream().findFirst().get().closeInventory(InventoryCloseEvent.Reason.OPEN_NEW);
-                TommyGenerator.getInstance().getGuiManager().openWorldCreatorInventory((Player) event.getViewers().stream().findFirst().get(), event.getResult().displayName().toString());
-            }
-        }
-    }*/
-
-
 
     @EventHandler
     public void on(InventoryClickEvent event) {

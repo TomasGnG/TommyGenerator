@@ -8,8 +8,6 @@ import com.tomasgng.utils.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-
 public class TommyGenerator extends JavaPlugin {
 
     private static TommyGenerator instance;
