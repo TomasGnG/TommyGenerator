@@ -79,16 +79,18 @@ public class GUIManager {
         var lockTimeItem = new ItemBuilder(Material.DAYLIGHT_DETECTOR).setKey("worldEditInv-lockTimeItem").setDisplayName("§aDaylight cycle").setLore("§8§o→ Switches the daylight cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE).booleanValue()).build();
         var lockWeatherItem = new ItemBuilder(Material.WATER_BUCKET).setKey("worldEditInv-lockWeatherItem").setDisplayName("§aWeather cycle").setLore("§8§o→ Switches the weather cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE).booleanValue()).build();
         var setWorldSpawnItem = new ItemBuilder(Material.WHITE_BED).setKey("worldEditInv-setWorldSpawnItem").setDisplayName("§aSet world spawn").setLore("§8§o→ Sets the world spawn to your current location").build();
-        var setAnimalSpawningItem = new SkullBuilder().setKey("worldEditInv-setAnimalSpawningItem").setDisplayName("§aAnimal spawning").setLore("§8§o→ Toggles the spawning of animals like cows etc.", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().animalSpawning(world)).setPlayerProfileByURL("https://textures.minecraft.net/texture/c5a9cd58d4c67bccc8fb1f5f756a2d381c9ffac2924b7f4cb71aa9fa13fb5c").build();
-        var setMonsterSpawningItem = new ItemBuilder(Material.CREEPER_HEAD).setKey("worldEditInv-setMonsterSpawningItem").setDisplayName("§aMonster spawning").setLore("§8§o→ Toggles the spawning of monsters like zombies etc.", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().monsterSpawning(world)).build();
-        var togglePvPItem = new ItemBuilder(Material.IRON_SWORD).setKey("worldEditInv-togglePvPItem").setDisplayName("§aPvP").setLore("§8§o→ Toggles the hitting of other players", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().allowedPvP(world)).build();
-        var toggleDifficulty = new ItemBuilder(Material.WOODEN_SWORD).setKey("worldEditInv-toggleDifficulty").setDisplayName("§aDifficulty").setLore("§8§o→ Toggles the difficulty of the world", "§8§o→ §c§oIt takes a couple of seconds till the state gets updated..", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().getDifficulty(world)).build();
+        var setAnimalSpawningItem = new SkullBuilder().setKey("worldEditInv-setAnimalSpawningItem").setDisplayName("§aAnimal spawning").setLore("§8§o→ Toggles the spawning of animals like cows etc.", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().animalSpawning(world)).setPlayerProfileByURL("https://textures.minecraft.net/texture/c5a9cd58d4c67bccc8fb1f5f756a2d381c9ffac2924b7f4cb71aa9fa13fb5c").build();
+        var setMonsterSpawningItem = new ItemBuilder(Material.CREEPER_HEAD).setKey("worldEditInv-setMonsterSpawningItem").setDisplayName("§aMonster spawning").setLore("§8§o→ Toggles the spawning of monsters like zombies etc.", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().monsterSpawning(world)).build();
+        var togglePvPItem = new ItemBuilder(Material.IRON_SWORD).setKey("worldEditInv-togglePvPItem").setDisplayName("§aPvP").setLore("§8§o→ Toggles the hitting of other players", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().allowedPvP(world)).build();
+        var toggleDifficulty = new ItemBuilder(Material.WOODEN_SWORD).setKey("worldEditInv-toggleDifficulty").setDisplayName("§aDifficulty").setLore("§8§o→ Toggles the difficulty of the world", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().getDifficulty(world)).build();
+        var deleteWorld = new ItemBuilder(Material.BARRIER).setKey("worldEditInv-deleteWorld").setDisplayName("§cDelete world").setLore("§8§o→ §c§oThis will delete the world without confirmation!").build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
         }
 
         inventory.setItem(inventory.getSize()-1, mainMenuItem);
+        inventory.setItem(inventory.getSize()-9, deleteWorld);
         inventory.setItem(0, tpItem);
         inventory.setItem(1, lockTimeItem);
         inventory.setItem(2, lockWeatherItem);

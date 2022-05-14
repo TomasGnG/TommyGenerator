@@ -93,6 +93,10 @@ public class InventoryClickListener implements Listener {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getWorldManager().toggleDifficulty(player, world);
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-deleteWorld"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                TommyGenerator.getInstance().getWorldManager().deleteWorld(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
+            }
         }
 
         if(event.getInventory() != null && event.getInventory().getType().equals(InventoryType.ANVIL)) {
