@@ -44,15 +44,15 @@ public class InventoryClickListener implements Listener {
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInv-normalWorld"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
-                TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.NORMAL);
+                Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.NORMAL));
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInv-netherWorld"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
-                TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.NETHER);
+                Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.NETHER));
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInv-endWorld"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
-                TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.THE_END);
+                Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> TommyGenerator.getInstance().getWorldManager().createNewWorld(player, event.getClickedInventory().getItem(9).getItemMeta().getDisplayName(), World.Environment.THE_END));
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-lockWeatherItem"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
