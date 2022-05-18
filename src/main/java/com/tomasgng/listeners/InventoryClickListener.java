@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -82,17 +83,38 @@ public class InventoryClickListener implements Listener {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getWorldManager().deleteWorld(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-renameWorld"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                TommyGenerator.getInstance().getGuiManager().openWorldEditInventoryRenameWorldInput(player, event.getView().getTitle().substring(2));
+            }
         }
 
         if(event.getInventory() != null && event.getInventory().getType().equals(InventoryType.ANVIL)) {
             for (int i = 0; i < 3; i++) {
                 if(event.getInventory().getItem(i) != null) {
-                    if(event.getInventory().getItem(i).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+                    if(event.getInventory().getItem(i) != null && event.getInventory().getItem(i).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
                         event.setCancelled(true);
                         if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
                             var itemR = event.getCurrentItem();
                             event.getClickedInventory().clear();
                             TommyGenerator.getInstance().getGuiManager().openWorldCreatorInventory((Player) event.getWhoClicked(), itemR.getItemMeta().getDisplayName());
+                        }
+                    }
+                    if(event.getInventory().getItem(i) != null && event.getInventory().getItem(i).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvRenameWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                        event.setCancelled(true);
+                        if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvRenameWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                            var itemR = event.getCurrentItem();
+                            event.getClickedInventory().clear();
+                            Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> {
+                                for(var item : itemR.getItemMeta().getPersistentDataContainer().getKeys()) {
+                                    if(!item.getKey().contains("worldedit")) {
+                                        if(Bukkit.getWorld(item.getKey()) == null)
+                                            return;
+                                        TommyGenerator.getInstance().getWorldManager().renameWorld(player, Bukkit.getWorld(item.getKey()).getName(), itemR.getItemMeta().getDisplayName(), Bukkit.getWorld(item.getKey()).getEnvironment());
+                                    }
+                                }
+
+                            });
                         }
                     }
                 }
