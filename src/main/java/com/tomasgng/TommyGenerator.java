@@ -3,10 +3,13 @@ package com.tomasgng;
 import com.tomasgng.commands.TommyGeneratorCommand;
 import com.tomasgng.listeners.InventoryClickListener;
 import com.tomasgng.listeners.InventoryCloseListener;
+import com.tomasgng.listeners.PlayerChangedWorldListener;
 import com.tomasgng.utils.GUIManager;
 import com.tomasgng.utils.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
 
 public class TommyGenerator extends JavaPlugin {
 
@@ -27,10 +30,11 @@ public class TommyGenerator extends JavaPlugin {
     private void registerCommandsAndListeners() {
         var manager = Bukkit.getPluginManager();
 
-        getCommand("tommygenerator").setExecutor(new TommyGeneratorCommand());
+        Objects.requireNonNull(getCommand("tommygenerator")).setExecutor(new TommyGeneratorCommand());
 
         manager.registerEvents(new InventoryClickListener(), this);
         manager.registerEvents(new InventoryCloseListener(), this);
+        manager.registerEvents(new PlayerChangedWorldListener(), this);
     }
 
     public static TommyGenerator getInstance() {

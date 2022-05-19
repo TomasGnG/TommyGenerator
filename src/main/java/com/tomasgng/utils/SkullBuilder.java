@@ -17,8 +17,8 @@ import java.util.UUID;
 
 public class SkullBuilder {
 
-    private ItemStack itemStack;
-    private SkullMeta itemMeta;
+    private final ItemStack itemStack;
+    private final SkullMeta itemMeta;
 
     public SkullBuilder() {
         this.itemStack = new ItemStack(Material.PLAYER_HEAD);

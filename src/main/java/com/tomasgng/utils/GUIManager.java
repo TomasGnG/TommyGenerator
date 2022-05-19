@@ -3,7 +3,6 @@ package com.tomasgng.utils;
 import com.tomasgng.TommyGenerator;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +13,6 @@ public class GUIManager {
     ItemStack mainMenuItem = new SkullBuilder().setKey("mainMenuItem").setDisplayName("§7Back to main menu").setLore("§8§o→ Click to open the main menu").setPlayerProfileByURL("https://textures.minecraft.net/texture/f6dab7271f4ff04d5440219067a109b5c0c1d1e01ec602c0020476f7eb612180").build();
 
     public void openMainInventory(Player player) {
-        var worldList = Bukkit.getWorlds();
         Inventory inventory = Bukkit.createInventory(null, 3*9, Component.text("§2TommyGenerator v" + TommyGenerator.getInstance().getPluginVersion()));
 
         var worldsItem = new ItemBuilder(Material.GRASS_BLOCK).setKey("mainInv-worldsItem").setDisplayName("§aWorlds").setLore("§8§o→ Click to open the worlds list").build();
@@ -50,18 +48,14 @@ public class GUIManager {
                 time = "§cNight";
             }
             switch (worldList.get(i).getEnvironment()) {
-                case NORMAL:
-                    inventory.setItem(i, new ItemBuilder(Material.GRASS_BLOCK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §a" + environment, "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§a" + worldList.get(i).getName()).build());
-                    break;
-                case NETHER:
-                    inventory.setItem(i, new ItemBuilder(Material.NETHERRACK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §c" + environment).setDisplayName("§c" + worldList.get(i).getName()).build());
-                    break;
-                case THE_END:
-                    inventory.setItem(i, new ItemBuilder(Material.END_STONE).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §f" + environment).setDisplayName("§f" + worldList.get(i).getName()).build());
-                    break;
-                case CUSTOM:
-                    inventory.setItem(i, new ItemBuilder(Material.BARRIER).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §7" + environment, "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§7" + worldList.get(i).getName()).build());
-                    break;
+                case NORMAL ->
+                        inventory.setItem(i, new ItemBuilder(Material.GRASS_BLOCK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §a" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§a" + worldList.get(i).getName()).build());
+                case NETHER ->
+                        inventory.setItem(i, new ItemBuilder(Material.NETHERRACK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §c" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i))).setDisplayName("§c" + worldList.get(i).getName()).build());
+                case THE_END ->
+                        inventory.setItem(i, new ItemBuilder(Material.END_STONE).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §f" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i))).setDisplayName("§f" + worldList.get(i).getName()).build());
+                case CUSTOM ->
+                        inventory.setItem(i, new ItemBuilder(Material.BARRIER).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §7" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§7" + worldList.get(i).getName()).build());
             }
         }
 
@@ -73,18 +67,19 @@ public class GUIManager {
     }
 
     public void openWorldEditInventory(Player player, String displayName, World world) {
-        Inventory inventory = Bukkit.createInventory(null, 6*9, displayName);
+        Inventory inventory = Bukkit.createInventory(null, 6*9, Component.text(displayName));
 
         var tpItem = new ItemBuilder(Material.ENDER_PEARL).setKey("worldEditInv-tpItem").setDisplayName("§f「 §aTeleport §f」").setLore("§8§o→ Teleport to the world spawn").build();
-        var lockTimeItem = new ItemBuilder(Material.DAYLIGHT_DETECTOR).setKey("worldEditInv-lockTimeItem").setDisplayName("§f「 §aDaylight cycle §f」").setLore("§8§o→ Switches the daylight cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE).booleanValue()).build();
-        var lockWeatherItem = new ItemBuilder(Material.WATER_BUCKET).setKey("worldEditInv-lockWeatherItem").setDisplayName("§f「 §aWeather cycle §f」").setLore("§8§o→ Switches the weather cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE).booleanValue()).build();
-        var setWorldSpawnItem = new ItemBuilder(Material.WHITE_BED).setKey("worldEditInv-setWorldSpawnItem").setDisplayName("§f「 §aSet world spawn §f」").setLore("§8§o→ Sets the world spawn to your current location").build();
-        var setAnimalSpawningItem = new SkullBuilder().setKey("worldEditInv-setAnimalSpawningItem").setDisplayName("§f「 §aAnimal spawning §f」").setLore("§8§o→ Toggles the spawning of animals like cows etc.", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().animalSpawning(world)).setPlayerProfileByURL("https://textures.minecraft.net/texture/c5a9cd58d4c67bccc8fb1f5f756a2d381c9ffac2924b7f4cb71aa9fa13fb5c").build();
-        var setMonsterSpawningItem = new ItemBuilder(Material.CREEPER_HEAD).setKey("worldEditInv-setMonsterSpawningItem").setDisplayName("§f「 §aMonster spawning §f」").setLore("§8§o→ Toggles the spawning of monsters like zombies etc.", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().monsterSpawning(world)).build();
+        var lockTimeItem = new ItemBuilder(Material.DAYLIGHT_DETECTOR).setKey("worldEditInv-lockTimeItem").setDisplayName("§f「 §aDaylight Cycle §f」").setLore("§8§o→ Switches the daylight cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE)).build();
+        var lockWeatherItem = new ItemBuilder(Material.WATER_BUCKET).setKey("worldEditInv-lockWeatherItem").setDisplayName("§f「 §aWeather Cycle §f」").setLore("§8§o→ Switches the weather cycle mode", "§8→ §f" + world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE)).build();
+        var setWorldSpawnItem = new ItemBuilder(Material.WHITE_BED).setKey("worldEditInv-setWorldSpawnItem").setDisplayName("§f「 §aSet World Spawn §f」").setLore("§8§o→ Sets the world spawn to your current location").build();
+        var setAnimalSpawningItem = new SkullBuilder().setKey("worldEditInv-setAnimalSpawningItem").setDisplayName("§f「 §aAnimal Spawning §f」").setLore("§8§o→ Toggles the spawning of animals like cows etc.", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().animalSpawning(world)).setPlayerProfileByURL("https://textures.minecraft.net/texture/c5a9cd58d4c67bccc8fb1f5f756a2d381c9ffac2924b7f4cb71aa9fa13fb5c").build();
+        var setMonsterSpawningItem = new ItemBuilder(Material.CREEPER_HEAD).setKey("worldEditInv-setMonsterSpawningItem").setDisplayName("§f「 §aMonster Spawning §f」").setLore("§8§o→ Toggles the spawning of monsters like zombies etc.", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().monsterSpawning(world)).build();
         var togglePvPItem = new ItemBuilder(Material.IRON_SWORD).setKey("worldEditInv-togglePvPItem").setDisplayName("§f「 §aPvP §f」").setLore("§8§o→ Toggles the hitting of other players", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().allowedPvP(world)).build();
         var toggleDifficulty = new ItemBuilder(Material.WOODEN_SWORD).setKey("worldEditInv-toggleDifficulty").setDisplayName("§f「 §aDifficulty §f」").setLore("§8§o→ Toggles the difficulty of the world", "§8→ §f" + TommyGenerator.getInstance().getWorldManager().getDifficulty(world)).build();
-        var deleteWorld = new ItemBuilder(Material.BARRIER).setKey("worldEditInv-deleteWorld").setDisplayName("§f「 ❌ §cDelete world §f」").setLore("§8§o→ §c§oThis will delete the world §4§limmediately§c§o!").build();
-        var renameWorld = new ItemBuilder(Material.PAPER).setKey("worldEditInv-renameWorld").setDisplayName("§f「 ✎ §cRename world §f」").setLore("§8§o→ §c§oThis will rename the world!", "§8§o→ §c§oThe old directory will be deleted with a 20 sec delay to avoid problems!").build();
+        var deleteWorld = new ItemBuilder(Material.BARRIER).setKey("worldEditInv-deleteWorld").setDisplayName("§f「 ❌ §cDelete §f」").setLore("§8§o→ §c§oThis will delete the world §4§limmediately§c§o!").build();
+        var renameWorld = new ItemBuilder(Material.PAPER).setKey("worldEditInv-renameWorld").setDisplayName("§f「 ✎ §cRename §f」").setLore("§8§o→ §c§oThis will rename the world!", "§8§o→ §c§oThe old directory will be deleted with a 20 sec delay to avoid problems!").build();
+        var toggleGameMode = new ItemBuilder(Material.GOLDEN_PICKAXE).setKey("worldEditInv-toggleGameMode").setDisplayName("§f「 §aGameMode §f」").setLore("§8§o→ Toggles the gamemode of the world.", "§8§o→ Players gamemode will change to the world gamemode.", "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(world)).build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
@@ -101,6 +96,7 @@ public class GUIManager {
         inventory.setItem(5, setMonsterSpawningItem);
         inventory.setItem(6, togglePvPItem);
         inventory.setItem(7, toggleDifficulty);
+        inventory.setItem(8, toggleGameMode);
 
         player.openInventory(inventory);
     }
@@ -126,18 +122,13 @@ public class GUIManager {
     }
 
     public void openWorldCreatorInventoryWorldNameInput(Player player) {
-        HumanEntity humanEntity = player;
-        humanEntity.openAnvil(humanEntity.getLocation(), true);
-
-        humanEntity.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldCreatorInvWorldNameInput-paperItem").setDisplayName("Your world name").build());
-
+        player.openAnvil(player.getLocation(), true);
+        player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldCreatorInvWorldNameInput-paperItem").setDisplayName("Your world name").build());
     }
 
     public void openWorldEditInventoryRenameWorldInput(Player player, String worldName) {
-        HumanEntity humanEntity = player;
-        humanEntity.openAnvil(humanEntity.getLocation(), true);
-
-        humanEntity.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldEditInvRenameWorldInput-paperItem").setKey(worldName).setDisplayName("Your new world name").build());
+        player.openAnvil(player.getLocation(), true);
+        player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldEditInvRenameWorldInput-paperItem").setKey(worldName).setDisplayName("Your new world name").build());
 
     }
 }

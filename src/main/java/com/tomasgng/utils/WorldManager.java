@@ -9,6 +9,8 @@ import org.bukkit.entity.SpawnCategory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 
 public class WorldManager {
 
@@ -24,7 +26,7 @@ public class WorldManager {
                 comments.add("#DO NOT CHANGE ANYTHING HERE!!!");
                 cfg.setComments("Worlds", comments);
                 save();
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
         }
         loadCreatedWorlds();
     }
@@ -35,8 +37,9 @@ public class WorldManager {
                 destination.mkdirs();
             }
 
-            String files[] = source.list();
+            String[] files = source.list();
 
+            assert files != null;
             for (String file : files) {
                 File srcFile = new File(source, file);
                 File destFile = new File(destination, file);
@@ -59,12 +62,14 @@ public class WorldManager {
                 }
             } catch (Exception e) {
                 try {
+                    assert in != null;
                     in.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
 
                 try {
+                    assert out != null;
                     out.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -104,14 +109,19 @@ public class WorldManager {
     }
 
     private void loadCreatedWorlds() {
-        if(!cfg.isSet("Worlds"))
+        reload();
+        if(cfg.getConfigurationSection("Worlds") == null)
             return;
-        var list = cfg.getConfigurationSection("Worlds").getKeys(true).stream().toList();
+        var list = Objects.requireNonNull(cfg.getConfigurationSection("Worlds")).getKeys(true).stream().toList();
         WorldCreator worldCreator;
-        for (int i = 0; i < list.size(); i++) {
-            worldCreator = new WorldCreator(list.get(i));
-            worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + list.get(i))));
-            worldCreator.createWorld();
+        for (String s : list) {
+            worldCreator = new WorldCreator(s.split("\\.")[0]);
+            try {
+                worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + s.split("\\.")[0] + ".Environment")));
+                worldCreator.createWorld();
+            } catch (Exception e) {
+                TommyGenerator.getInstance().getLogger().log(Level.SEVERE, "World \"" + s.split("\\.")[0] + "\" couldn't be loaded! Error: " + e.getMessage());
+            }
         }
     }
 
@@ -120,13 +130,11 @@ public class WorldManager {
         List<String> worlds = cfg.getStringList("Worlds");
         if(!worlds.contains(world)) {
             worlds.add(world);
-            for (int i = 0; i < worlds.size(); i++) {
-                cfg.set("Worlds." + worlds.get(i), Bukkit.getWorld(worlds.get(i)).getEnvironment().name());
+            for (String s : worlds) {
+                cfg.set("Worlds." + s + ".Environment", Objects.requireNonNull(Bukkit.getWorld(s)).getEnvironment().name());
+                cfg.set("Worlds." + s + ".GameMode", "DISABLED");
             }
-
             save();
-            //player.sendMessage("§aThe world \" " + world + "\" has been successfully created");
-            return;
         }
     }
 
@@ -135,35 +143,28 @@ public class WorldManager {
         List<String> worlds = cfg.getStringList("Worlds");
         worlds.remove(world);
         cfg.set("Worlds." + world, null);
-        for (int i = 0; i < worlds.size(); i++) {
-            cfg.set("Worlds." + worlds.get(i), Bukkit.getWorld(worlds.get(i)).getEnvironment().name());
+        for (String s : worlds) {
+            cfg.set("Worlds." + s, Objects.requireNonNull(Bukkit.getWorld(s)).getEnvironment().name());
         }
         save();
     }
 
-    private void renameWorldFromList(String oldWorld, String newWorld) {
+    private void setWorldGameMode(World world, GameMode gameMode) {
         reload();
-        List<String> worlds = cfg.getStringList("Worlds");
-        String environment = cfg.getString("Worlds." + oldWorld);
-        worlds.remove(oldWorld);
-        worlds.add(newWorld);
-        cfg.set("Worlds." + oldWorld, null);
-        for (int i = 0; i < worlds.size(); i++) {
-            cfg.set("Worlds." + worlds.get(i), Bukkit.getWorld(worlds.get(i)).getEnvironment().name());
+        if(gameMode == null) {
+            cfg.set("Worlds." + world.getName() + ".GameMode", "DISABLED");
+            save();
+            return;
         }
+        cfg.set("Worlds." + world.getName() + ".GameMode", gameMode.name());
         save();
-    }
-
-    private World.Environment getWorldEnvironment(String world) {
-        reload();
-        return World.Environment.valueOf(cfg.getString("Worlds." + world));
     }
 
     // World Creator
 
     public void createNewWorld(Player player, String worldName, World.Environment environment) {
         player.sendMessage("§aCreating world..");
-        WorldCreator creator = null;
+        WorldCreator creator;
         try {
             creator = new WorldCreator(worldName);
         } catch (IllegalArgumentException exception) {
@@ -186,7 +187,7 @@ public class WorldManager {
     }
 
     public void lockCurrentTime(Player player, World world) {
-        if(world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE).booleanValue()) {
+        if(Boolean.TRUE.equals(world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE))) {
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
             TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
             return;
@@ -196,7 +197,7 @@ public class WorldManager {
     }
 
     public void lockCurrentWeather(Player player, World world) {
-        if(world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE).booleanValue()) {
+        if(Boolean.TRUE.equals(world.getGameRuleValue(GameRule.DO_WEATHER_CYCLE))) {
             world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
             TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
             return;
@@ -224,10 +225,7 @@ public class WorldManager {
     }
 
     public boolean animalSpawning(World world) {
-        if(world.getSpawnLimit(SpawnCategory.ANIMAL) == 0) {
-            return false;
-        }
-        return true;
+        return world.getSpawnLimit(SpawnCategory.ANIMAL) != 0;
     }
 
     public void toggleMonsterSpawning(Player player, World world) {
@@ -244,10 +242,7 @@ public class WorldManager {
     }
 
     public boolean monsterSpawning(World world) {
-        if(world.getSpawnLimit(SpawnCategory.MONSTER) == 0) {
-            return false;
-        }
-        return true;
+        return world.getSpawnLimit(SpawnCategory.MONSTER) != 0;
     }
 
     public void togglePvP(Player player, World world) {
@@ -268,28 +263,46 @@ public class WorldManager {
 
     public void toggleDifficulty(Player player, World world) {
         switch (world.getDifficulty()) {
-            case PEACEFUL:
+            case PEACEFUL -> {
                 world.setDifficulty(Difficulty.EASY);
                 player.sendMessage("§aNew difficulty: §2" + Difficulty.EASY.name());
-                break;
-            case EASY:
+            }
+            case EASY -> {
                 world.setDifficulty(Difficulty.NORMAL);
                 player.sendMessage("§aNew difficulty: §2" + Difficulty.NORMAL.name());
-                break;
-            case NORMAL:
+            }
+            case NORMAL -> {
                 world.setDifficulty(Difficulty.HARD);
                 player.sendMessage("§aNew difficulty: §2" + Difficulty.HARD.name());
-                break;
-            case HARD:
+            }
+            case HARD -> {
                 world.setDifficulty(Difficulty.PEACEFUL);
                 player.sendMessage("§aNew difficulty: §2" + Difficulty.PEACEFUL.name());
-                break;
+            }
         }
         TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
     }
 
     public String getDifficulty(World world) {
         return world.getDifficulty().name();
+    }
+
+    public void toggleGameMode(Player player, World world) {
+        switch (getGameMode(world)) {
+            case "SURVIVAL" -> setWorldGameMode(world, GameMode.CREATIVE);
+            case "CREATIVE" -> setWorldGameMode(world, GameMode.ADVENTURE);
+            case "ADVENTURE" -> setWorldGameMode(world, GameMode.SPECTATOR);
+            case "SPECTATOR" -> setWorldGameMode(world, null);
+            case "DISABLED" -> setWorldGameMode(world, GameMode.SURVIVAL);
+        }
+        TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
+    }
+
+    public String getGameMode(World world) {
+        if(!cfg.isSet("Worlds." + world.getName() + ".GameMode")) {
+            return "NOT SET";
+        }
+        return cfg.getString("Worlds." + world.getName() + ".GameMode");
     }
 
     public void deleteWorld(Player player, World world) {
@@ -315,12 +328,12 @@ public class WorldManager {
         }
 
         player.sendMessage("§aUnloading the world §2" + oldWorldName + "§a...");
-        if(Bukkit.getWorld(oldWorldName).getPlayerCount() != 0) {
-            for(Player players : Bukkit.getWorld(oldWorldName).getPlayers()) {
-                players.teleport(Bukkit.getWorld("world").getSpawnLocation());
+        if(Objects.requireNonNull(Bukkit.getWorld(oldWorldName)).getPlayerCount() != 0) {
+            for(Player players : Objects.requireNonNull(Bukkit.getWorld(oldWorldName)).getPlayers()) {
+                players.teleport(Objects.requireNonNull(Bukkit.getWorld("world")).getSpawnLocation());
             }
         }
-        Bukkit.unloadWorld(Bukkit.getWorld(oldWorldName), true);
+        Bukkit.unloadWorld(Objects.requireNonNull(Bukkit.getWorld(oldWorldName)), true);
         player.sendMessage("§aUnloaded world!");
 
         player.sendMessage("§aRenaming...");

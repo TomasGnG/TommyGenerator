@@ -13,9 +13,8 @@ import java.util.Arrays;
 
 public class ItemBuilder {
 
-    private ItemStack itemStack;
-    private ItemMeta itemMeta;
-    private ItemFlag[] itemFlag;
+    private final ItemStack itemStack;
+    private final ItemMeta itemMeta;
 
     public ItemBuilder(Material material) {
         this.itemStack = new ItemStack(material);
