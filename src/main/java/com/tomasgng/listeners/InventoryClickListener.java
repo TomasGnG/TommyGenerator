@@ -99,6 +99,10 @@ public class InventoryClickListener implements Listener {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getWorldManager().toggleGameMode(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-toggleEntry"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                TommyGenerator.getInstance().getWorldManager().toggleEntry(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
+            }
         }
 
         event.getInventory();

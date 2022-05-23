@@ -49,13 +49,13 @@ public class GUIManager {
             }
             switch (worldList.get(i).getEnvironment()) {
                 case NORMAL ->
-                        inventory.setItem(i, new ItemBuilder(Material.GRASS_BLOCK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §a" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§a" + worldList.get(i).getName()).build());
+                        inventory.setItem(i, new ItemBuilder(Material.GRASS_BLOCK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §a" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Entry: §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(worldList.get(i)), "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§a" + worldList.get(i).getName()).build());
                 case NETHER ->
-                        inventory.setItem(i, new ItemBuilder(Material.NETHERRACK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §c" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i))).setDisplayName("§c" + worldList.get(i).getName()).build());
+                        inventory.setItem(i, new ItemBuilder(Material.NETHERRACK).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §c" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Entry: §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(worldList.get(i))).setDisplayName("§c" + worldList.get(i).getName()).build());
                 case THE_END ->
-                        inventory.setItem(i, new ItemBuilder(Material.END_STONE).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §f" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i))).setDisplayName("§f" + worldList.get(i).getName()).build());
+                        inventory.setItem(i, new ItemBuilder(Material.END_STONE).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §f" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Entry: §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(worldList.get(i))).setDisplayName("§f" + worldList.get(i).getName()).build());
                 case CUSTOM ->
-                        inventory.setItem(i, new ItemBuilder(Material.BARRIER).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §7" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§7" + worldList.get(i).getName()).build());
+                        inventory.setItem(i, new ItemBuilder(Material.BARRIER).setLore("§8→ §7Players: §a" + playerCount, "§8→ §7Environment: §7" + environment, "§8→ §7GameMode: §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(worldList.get(i)), "§8→ §7Entry: §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(worldList.get(i)), "§8→ §7Time: " + time, "§8→ §7Weather: " + weather).setDisplayName("§7" + worldList.get(i).getName()).build());
             }
         }
 
@@ -80,6 +80,7 @@ public class GUIManager {
         var deleteWorld = new ItemBuilder(Material.BARRIER).setKey("worldEditInv-deleteWorld").setDisplayName("§f「 ❌ §cDelete §f」").setLore("§8§o→ §c§oThis will delete the world §4§limmediately§c§o!").build();
         var renameWorld = new ItemBuilder(Material.PAPER).setKey("worldEditInv-renameWorld").setDisplayName("§f「 ✎ §cRename §f」").setLore("§8§o→ §c§oThis will rename the world!", "§8§o→ §c§oThe old directory will be deleted with a 20 sec delay to avoid problems!").build();
         var toggleGameMode = new ItemBuilder(Material.GOLDEN_PICKAXE).setKey("worldEditInv-toggleGameMode").setDisplayName("§f「 §aGameMode §f」").setLore("§8§o→ Toggles the gamemode of the world.", "§8§o→ Players gamemode will change to the world gamemode.", "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(world)).build();
+        var toggleEntry = new ItemBuilder(Material.ENDER_EYE).setKey("worldEditInv-toggleEntry").setDisplayName("§f「 ✓ §cEntry §f」").setLore("§8§o→ Toggles the entry mode for players without the permission", "§8§o→ Permission will be like this: tommygenerator.entry." + world.getName().toLowerCase(), "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(world)).build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
@@ -88,6 +89,7 @@ public class GUIManager {
         inventory.setItem(inventory.getSize()-1, mainMenuItem);
         inventory.setItem(inventory.getSize()-9, deleteWorld);
         inventory.setItem(inventory.getSize()-8, renameWorld);
+        inventory.setItem(inventory.getSize()-7, toggleEntry);
         inventory.setItem(0, tpItem);
         inventory.setItem(1, lockTimeItem);
         inventory.setItem(2, lockWeatherItem);
@@ -97,6 +99,7 @@ public class GUIManager {
         inventory.setItem(6, togglePvPItem);
         inventory.setItem(7, toggleDifficulty);
         inventory.setItem(8, toggleGameMode);
+
 
         player.openInventory(inventory);
     }

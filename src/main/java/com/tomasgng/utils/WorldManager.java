@@ -160,6 +160,16 @@ public class WorldManager {
         save();
     }
 
+    private void setWorldEntryMode(World world, Boolean bool) {
+        if(bool) {
+            cfg.set("Worlds." + world.getName() + ".Entry", "ALLOWED");
+            save();
+            return;
+        }
+        cfg.set("Worlds." + world.getName() + ".Entry", "DENIED");
+        save();
+    }
+
     // World Creator
 
     public void createNewWorld(Player player, String worldName, World.Environment environment) {
@@ -360,5 +370,18 @@ public class WorldManager {
         TommyGenerator.getInstance().getGuiManager().openWorldListInventory(player);
     }
 
+    public void toggleEntry(Player player, World world) {
+        switch (getEntryMode(world)) {
+            case "NOT SET", "DENIED" -> setWorldEntryMode(world, true);
+            case "ALLOWED" -> setWorldEntryMode(world, false);
+        }
+        TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
+    }
 
+    public String getEntryMode(World world) {
+        if(!cfg.isSet("Worlds." + world.getName() + ".Entry")) {
+            return "NOT SET";
+        }
+        return cfg.getString("Worlds." + world.getName() + ".Entry");
+    }
 }

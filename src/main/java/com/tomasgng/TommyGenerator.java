@@ -4,6 +4,7 @@ import com.tomasgng.commands.TommyGeneratorCommand;
 import com.tomasgng.listeners.InventoryClickListener;
 import com.tomasgng.listeners.InventoryCloseListener;
 import com.tomasgng.listeners.PlayerChangedWorldListener;
+import com.tomasgng.listeners.PlayerTeleportListener;
 import com.tomasgng.utils.GUIManager;
 import com.tomasgng.utils.WorldManager;
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ public class TommyGenerator extends JavaPlugin {
         manager.registerEvents(new InventoryClickListener(), this);
         manager.registerEvents(new InventoryCloseListener(), this);
         manager.registerEvents(new PlayerChangedWorldListener(), this);
+        manager.registerEvents(new PlayerTeleportListener(), this);
     }
 
     public static TommyGenerator getInstance() {
