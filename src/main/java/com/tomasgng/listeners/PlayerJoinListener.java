@@ -24,5 +24,6 @@ public class PlayerJoinListener implements Listener {
             }
         }
         player.addPotionEffects(potionEffectCollection);
+        PlayerChangedWorldListener.addedEffects.put(player, potionEffectCollection);
     }
 }
