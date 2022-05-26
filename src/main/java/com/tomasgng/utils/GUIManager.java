@@ -99,7 +99,7 @@ public class GUIManager {
         for (int i = 0; i < worldManager.getActiveEffects(world).size(); i++) {
             editEffectsLore.add("§8§o→ §f" + worldManager.getActiveEffects(world).get(i));
         }
-        var editEffects = new ItemBuilder(Material.GLASS_BOTTLE).setKey("worldEditInv-editEffects").setDisplayName("§f「 ✓ §cEffects §f」").setLore(editEffectsLore.toArray(String[]::new)).build();
+        var editEffects = new ItemBuilder(Material.GLASS_BOTTLE).setKey("worldEditInv-editEffects").setDisplayName("§f「 §cEffects §f」").setLore(editEffectsLore.toArray(String[]::new)).build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
