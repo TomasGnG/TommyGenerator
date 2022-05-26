@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SpawnCategory;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,15 +17,14 @@ public class WorldManager {
 
     public File configFile = new File("plugins/TommyGenerator/worlds.yml");
     private YamlConfiguration cfg = YamlConfiguration.loadConfiguration(configFile);
+    public GUIManager guiManager;
 
     public WorldManager() {
+        Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> guiManager = TommyGenerator.getInstance().getGuiManager());
         if(!configFile.exists()) {
             try {
                 configFile.createNewFile();
                 cfg.set("Worlds", new ArrayList<String>());
-                var comments = new ArrayList<String>();
-                comments.add("#DO NOT CHANGE ANYTHING HERE!!!");
-                cfg.setComments("Worlds", comments);
                 save();
             } catch (IOException ignored) {}
         }
@@ -115,12 +115,15 @@ public class WorldManager {
         var list = Objects.requireNonNull(cfg.getConfigurationSection("Worlds")).getKeys(true).stream().toList();
         WorldCreator worldCreator;
         for (String s : list) {
-            worldCreator = new WorldCreator(s.split("\\.")[0]);
+            var worldName = s.split("\\.")[0];
+            worldCreator = new WorldCreator(worldName);
+            if(worldName.equalsIgnoreCase("world") || worldName.equalsIgnoreCase("world_nether") || worldName.equalsIgnoreCase("world_the_end"))
+                return;
             try {
-                worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + s.split("\\.")[0] + ".Environment")));
+                worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + worldName + ".Environment")));
                 worldCreator.createWorld();
             } catch (Exception e) {
-                TommyGenerator.getInstance().getLogger().log(Level.SEVERE, "World \"" + s.split("\\.")[0] + "\" couldn't be loaded! Error: " + e.getMessage());
+                TommyGenerator.getInstance().getLogger().log(Level.SEVERE, "World \"" + worldName + "\" couldn't be loaded! Error: " + e.getMessage());
             }
         }
     }
@@ -167,6 +170,28 @@ public class WorldManager {
             return;
         }
         cfg.set("Worlds." + world.getName() + ".Entry", "DENIED");
+        save();
+    }
+
+    private void editEffectFromList(World world, PotionEffectType potionEffectType) {
+        var path = "Worlds." + world.getName() + ".Effects";
+        List<String> effects;
+        if(!cfg.isSet(path)) {
+            effects = new ArrayList<>();
+            effects.add(potionEffectType.getName());
+            cfg.set(path, effects);
+            save();
+            return;
+        }
+        effects = cfg.getStringList("Worlds." + world.getName() + ".Effects");
+        if(effects.contains(potionEffectType.getName())) {
+            effects.remove(potionEffectType.getName());
+            cfg.set(path, effects);
+            save();
+            return;
+        }
+        effects.add(potionEffectType.getName());
+        cfg.set(path, effects);
         save();
     }
 
@@ -303,7 +328,7 @@ public class WorldManager {
             case "CREATIVE" -> setWorldGameMode(world, GameMode.ADVENTURE);
             case "ADVENTURE" -> setWorldGameMode(world, GameMode.SPECTATOR);
             case "SPECTATOR" -> setWorldGameMode(world, null);
-            case "DISABLED" -> setWorldGameMode(world, GameMode.SURVIVAL);
+            default -> setWorldGameMode(world, GameMode.SURVIVAL);
         }
         TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
     }
@@ -383,5 +408,14 @@ public class WorldManager {
             return "NOT SET";
         }
         return cfg.getString("Worlds." + world.getName() + ".Entry");
+    }
+
+    public void toggleEffect(Player player, World world, PotionEffectType potionEffectType) {
+        editEffectFromList(world, potionEffectType);
+        guiManager.openWorldEditEffectsInventory(player, player.getOpenInventory().getTitle(), world);
+    }
+
+    public List<String> getActiveEffects(World world) {
+        return cfg.getStringList("Worlds." + world.getName() + ".Effects");
     }
 }

@@ -6,11 +6,21 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+
+import static net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN;
 
 public class GUIManager {
 
     ItemStack glass = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setKey("tg-defaultGlassItem").setDisplayName(" ").build();
     ItemStack mainMenuItem = new SkullBuilder().setKey("mainMenuItem").setDisplayName("§7Back to main menu").setLore("§8§o→ Click to open the main menu").setPlayerProfileByURL("https://textures.minecraft.net/texture/f6dab7271f4ff04d5440219067a109b5c0c1d1e01ec602c0020476f7eb612180").build();
+    WorldManager worldManager;
+
+    public GUIManager() {
+        worldManager = TommyGenerator.getInstance().getWorldManager();
+    }
 
     public void openMainInventory(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 3*9, Component.text("§2TommyGenerator v" + TommyGenerator.getInstance().getPluginVersion()));
@@ -82,6 +92,15 @@ public class GUIManager {
         var toggleGameMode = new ItemBuilder(Material.GOLDEN_PICKAXE).setKey("worldEditInv-toggleGameMode").setDisplayName("§f「 §aGameMode §f」").setLore("§8§o→ Toggles the gamemode of the world.", "§8§o→ Players gamemode will change to the world gamemode.", "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(world)).build();
         var toggleEntry = new ItemBuilder(Material.ENDER_EYE).setKey("worldEditInv-toggleEntry").setDisplayName("§f「 ✓ §cEntry §f」").setLore("§8§o→ Toggles the entry mode for players without the permission", "§8§o→ Permission will be like this: tommygenerator.entry." + world.getName().toLowerCase(), "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(world)).build();
 
+        var editEffectsLore = new ArrayList<String>();
+        editEffectsLore.add("§8§o→ Sets the effects for the world");
+        editEffectsLore.add("§8§o→ Players will get the activated effects permanently when entering");
+        editEffectsLore.add("§8§o→ Active:");
+        for (int i = 0; i < worldManager.getActiveEffects(world).size(); i++) {
+            editEffectsLore.add("§8§o→ §f" + worldManager.getActiveEffects(world).get(i));
+        }
+        var editEffects = new ItemBuilder(Material.GLASS_BOTTLE).setKey("worldEditInv-editEffects").setDisplayName("§f「 ✓ §cEffects §f」").setLore(editEffectsLore.toArray(String[]::new)).build();
+
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
         }
@@ -99,13 +118,34 @@ public class GUIManager {
         inventory.setItem(6, togglePvPItem);
         inventory.setItem(7, toggleDifficulty);
         inventory.setItem(8, toggleGameMode);
+        inventory.setItem(9, editEffects);
 
+        player.openInventory(inventory);
+    }
+
+    public void openWorldEditEffectsInventory(Player player, String displayName, World world) {
+        var inventory = Bukkit.createInventory(null, 6*9, displayName);
+        var activeEffects = worldManager.getActiveEffects(world);
+
+        for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
+            inventory.setItem(i, glass);
+        }
+
+        for (int i = 0; i < PotionEffectType.values().length; i++) {
+            if(activeEffects.contains(PotionEffectType.values()[i].getName())) {
+                inventory.setItem(i, new ItemBuilder(Material.EXPERIENCE_BOTTLE).setKey("worldEditEffectsInv-effectType").setDisplayName("§a" + PotionEffectType.values()[i].getName()).build());
+            } else {
+                inventory.setItem(i, new ItemBuilder(Material.GLASS_BOTTLE).setKey("worldEditEffectsInv-effectType").setDisplayName("§c" + PotionEffectType.values()[i].getName()).build());
+            }
+        }
+
+        inventory.setItem(inventory.getSize()-1, mainMenuItem);
 
         player.openInventory(inventory);
     }
 
     public void openWorldCreatorInventory(Player player, String worldName) {
-        var inventory = Bukkit.createInventory(null, 2*9, Component.text("§2Choose your world type.."));
+        var inventory = Bukkit.createInventory(null, 2*9, Component.text("Choose your world type..", DARK_GREEN));
 
         var normalWorld = new ItemBuilder(Material.GRASS_BLOCK).setKey("worldCreatorInv-normalWorld").setDisplayName("§aNormal").build();
         var netherWorld = new ItemBuilder(Material.NETHERRACK).setKey("worldCreatorInv-netherWorld").setDisplayName("§cNether").build();
