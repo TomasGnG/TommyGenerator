@@ -20,6 +20,9 @@ public class TommyGenerator extends JavaPlugin {
         worldManager = new WorldManager();
         guiManager = new GUIManager();
 
+        int pluginId = 15315;
+        Metrics metrics = new Metrics(this, pluginId);
+
         registerCommandsAndListeners();
     }
 
