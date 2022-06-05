@@ -118,6 +118,14 @@ public class InventoryClickListener implements Listener {
                 worldManager.toggleEffect(player, world, PotionEffectType.getByName(event.getCurrentItem().getItemMeta().getDisplayName().substring(2)));
                 guiManager.openWorldEditEffectsInventory(player, event.getView().getTitle(), world);
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainInv-portalItem"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                guiManager.openPortalChooseWorldInventory(player);
+            }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "portalChooseWorldInv-World"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                TommyGenerator.getInstance().getPortalManager().togglePlayersCreatingState(player, Bukkit.getWorld(event.getCurrentItem().getItemMeta().getDisplayName().substring(2)), false);
+            }
         }
 
         event.getInventory();

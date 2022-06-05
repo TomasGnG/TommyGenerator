@@ -117,13 +117,13 @@ public class WorldManager {
         for (String s : list) {
             var worldName = s.split("\\.")[0];
             worldCreator = new WorldCreator(worldName);
-            if(worldName.equalsIgnoreCase("world") || worldName.equalsIgnoreCase("world_nether") || worldName.equalsIgnoreCase("world_the_end"))
-                return;
-            try {
-                worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + worldName + ".Environment")));
-                worldCreator.createWorld();
-            } catch (Exception e) {
-                TommyGenerator.getInstance().getLogger().log(Level.SEVERE, "World \"" + worldName + "\" couldn't be loaded! Error: " + e.getMessage());
+            if(!worldName.equalsIgnoreCase("world") && !worldName.equalsIgnoreCase("world_nether") && !worldName.equalsIgnoreCase("world_the_end")) {
+                try {
+                    worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + worldName + ".Environment")));
+                    worldCreator.createWorld();
+                } catch (Exception e) {
+                    TommyGenerator.getInstance().getLogger().log(Level.SEVERE, "World \"" + worldName + "\" couldn't be loaded! Error: " + e.getMessage());
+                }
             }
         }
     }
@@ -397,17 +397,17 @@ public class WorldManager {
 
     public void toggleEntry(Player player, World world) {
         switch (getEntryMode(world)) {
-            case "NOT SET", "DENIED" -> setWorldEntryMode(world, true);
-            case "ALLOWED" -> setWorldEntryMode(world, false);
+            case NOT_SET, DENIED -> setWorldEntryMode(world, true);
+            case ALLOWED -> setWorldEntryMode(world, false);
         }
         TommyGenerator.getInstance().getGuiManager().openWorldEditInventory(player, player.getOpenInventory().getTitle(), world);
     }
 
-    public String getEntryMode(World world) {
+    public EntryMode getEntryMode(World world) {
         if(!cfg.isSet("Worlds." + world.getName() + ".Entry")) {
-            return "NOT SET";
+            return EntryMode.NOT_SET;
         }
-        return cfg.getString("Worlds." + world.getName() + ".Entry");
+        return EntryMode.valueOf(cfg.getString("Worlds." + world.getName() + ".Entry"));
     }
 
     public void toggleEffect(Player player, World world, PotionEffectType potionEffectType) {

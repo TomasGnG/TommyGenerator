@@ -27,12 +27,14 @@ public class GUIManager {
 
         var worldsItem = new ItemBuilder(Material.GRASS_BLOCK).setKey("mainInv-worldsItem").setDisplayName("§aWorlds").setLore("§8§o→ Click to open the worlds list").build();
         var createItem = new ItemBuilder(Material.PAPER).setKey("mainInv-createItem").setDisplayName("§2Create world").setLore("§8§o→ Click to generate a new world").build();
+        var portalItem = new ItemBuilder(Material.ENDER_EYE).setKey("mainInv-portalItem").setDisplayName("§2Create portal").setLore("§8§o→ Click to create a portal between two worlds", "§8§o→ §7Active: §f" + TommyGenerator.getInstance().getPortalManager().getActivePortalCount()).build();
 
         for (int i = 0; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
         }
         inventory.setItem(11, worldsItem);
         inventory.setItem(15, createItem);
+        inventory.setItem(22, portalItem);
 
         player.openInventory(inventory);
     }
@@ -173,5 +175,30 @@ public class GUIManager {
         player.openAnvil(player.getLocation(), true);
         player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldEditInvRenameWorldInput-paperItem").setKey(worldName).setDisplayName("Your new world name").build());
 
+    }
+
+    public void openPortalChooseWorldInventory(Player player) {
+        var worldList = Bukkit.getWorlds();
+        Inventory inventory;
+        inventory = Bukkit.createInventory(null, 6*9, Component.text("§2Choose destination world"));
+
+        for (int i = 0; i < worldList.size(); i++) {
+            switch (worldList.get(i).getEnvironment()) {
+                case NORMAL ->
+                        inventory.setItem(i, new ItemBuilder(Material.GRASS_BLOCK).setDisplayName("§a" + worldList.get(i).getName()).setKey("portalChooseWorldInv-World").build());
+                case NETHER ->
+                        inventory.setItem(i, new ItemBuilder(Material.NETHERRACK).setDisplayName("§c" + worldList.get(i).getName()).setKey("portalChooseWorldInv-World").build());
+                case THE_END ->
+                        inventory.setItem(i, new ItemBuilder(Material.END_STONE).setDisplayName("§f" + worldList.get(i).getName()).setKey("portalChooseWorldInv-World").build());
+                case CUSTOM ->
+                        inventory.setItem(i, new ItemBuilder(Material.BARRIER).setDisplayName("§7" + worldList.get(i).getName()).setKey("portalChooseWorldInv-World").build());
+            }
+        }
+
+        for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
+            inventory.setItem(i, glass);
+        }
+        inventory.setItem(inventory.getSize()-1, mainMenuItem);
+        player.openInventory(inventory);
     }
 }
