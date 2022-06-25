@@ -129,7 +129,7 @@ public class InventoryClickListener implements Listener {
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-duplicateWorld"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
-                guiManager.openWorldEditInventoryDuplicateWorldInput(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
+                guiManager.openWorldEditInventoryDuplicateWorldInput(player, Objects.requireNonNull(Bukkit.getWorld(event.getView().getTitle().substring(2))));
             }
         }
 

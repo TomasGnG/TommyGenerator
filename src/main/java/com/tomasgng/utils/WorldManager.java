@@ -132,6 +132,7 @@ public class WorldManager {
         for (String s : list) {
             var worldName = cfg.getString("Worlds." + s.split("\\.")[0] + ".Name");
             var id = s.split("\\.")[0];
+            assert worldName != null;
             worldCreator = new WorldCreator(worldName);
             if(!worldName.equalsIgnoreCase("world") && !worldName.equalsIgnoreCase("world_nether") && !worldName.equalsIgnoreCase("world_the_end")) {
                 try {
