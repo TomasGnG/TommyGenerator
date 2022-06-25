@@ -17,6 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class InventoryClickListener implements Listener {
 
@@ -99,7 +100,7 @@ public class InventoryClickListener implements Listener {
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-renameWorld"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
-                guiManager.openWorldEditInventoryRenameWorldInput(player, event.getView().getTitle().substring(2));
+                guiManager.openWorldEditInventoryRenameWorldInput(player, Objects.requireNonNull(Bukkit.getWorld(event.getView().getTitle().substring(2))));
             }
             if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-toggleGameMode"), PersistentDataType.DOUBLE)) {
                 event.setCancelled(true);
@@ -126,9 +127,12 @@ public class InventoryClickListener implements Listener {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getPortalManager().togglePlayersCreatingState(player, Bukkit.getWorld(event.getCurrentItem().getItemMeta().getDisplayName().substring(2)), false);
             }
+            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-duplicateWorld"), PersistentDataType.DOUBLE)) {
+                event.setCancelled(true);
+                guiManager.openWorldEditInventoryDuplicateWorldInput(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
+            }
         }
 
-        event.getInventory();
         if(event.getInventory().getType().equals(InventoryType.ANVIL)) {
             for (int i = 0; i < 3; i++) {
                 if(event.getInventory().getItem(i) != null) {
@@ -150,7 +154,25 @@ public class InventoryClickListener implements Listener {
                                     if(!item.getKey().contains("worldedit")) {
                                         if(Bukkit.getWorld(item.getKey()) == null)
                                             return;
-                                        worldManager.renameWorld(player, Objects.requireNonNull(Bukkit.getWorld(item.getKey())).getName(), itemR.getItemMeta().getDisplayName(), Objects.requireNonNull(Bukkit.getWorld(item.getKey())).getEnvironment());
+                                        worldManager.renameWorld(player, Bukkit.getWorld(item.getKey()), itemR.getItemMeta().getDisplayName(), Objects.requireNonNull(Bukkit.getWorld(item.getKey())).getEnvironment());
+                                    }
+                                }
+
+                            });
+                        }
+                    }
+                    if(event.getInventory().getItem(i) != null && Objects.requireNonNull(event.getInventory().getItem(i)).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvDuplicateWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                        event.setCancelled(true);
+                        if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvDuplicateWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                            var itemR = event.getCurrentItem();
+                            Objects.requireNonNull(event.getClickedInventory()).clear();
+                            Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> {
+                                for(var item : itemR.getItemMeta().getPersistentDataContainer().getKeys()) {
+                                    if(!item.getKey().startsWith("worldedit")) {
+                                        UUID uid = UUID.fromString(item.getKey());
+                                        if(Bukkit.getWorld(uid) == null)
+                                            return;
+                                        worldManager.duplicateWorld(player, Bukkit.getWorld(uid), itemR.getItemMeta().getDisplayName());
                                     }
                                 }
 
@@ -161,7 +183,6 @@ public class InventoryClickListener implements Listener {
             }
 
         }
-
 
         if(inventoryView.title().equals(Component.text("§2TommyGenerator v" + TommyGenerator.getInstance().getPluginVersion()))) {
             event.setCancelled(true);

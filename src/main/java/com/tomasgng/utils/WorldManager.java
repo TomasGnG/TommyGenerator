@@ -8,6 +8,9 @@ import org.bukkit.entity.SpawnCategory;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,6 +96,18 @@ public class WorldManager {
         return folder.exists();
     }
 
+    private boolean duplicateFolder(Path source, Path destination) {
+        var customFileVisitor = new CustomFileVisitor(source, destination);
+
+        try {
+            Files.walkFileTree(source, customFileVisitor);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        new File(destination + "\\uid.dat").delete();
+        return destination.toFile().exists();
+    }
+
     // Worlds file configuration
 
     public void reload() {
@@ -115,11 +130,12 @@ public class WorldManager {
         var list = Objects.requireNonNull(cfg.getConfigurationSection("Worlds")).getKeys(true).stream().toList();
         WorldCreator worldCreator;
         for (String s : list) {
-            var worldName = s.split("\\.")[0];
+            var worldName = cfg.getString("Worlds." + s.split("\\.")[0] + ".Name");
+            var id = s.split("\\.")[0];
             worldCreator = new WorldCreator(worldName);
             if(!worldName.equalsIgnoreCase("world") && !worldName.equalsIgnoreCase("world_nether") && !worldName.equalsIgnoreCase("world_the_end")) {
                 try {
-                    worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + worldName + ".Environment")));
+                    worldCreator.environment(World.Environment.valueOf(cfg.getString("Worlds." + id + ".Environment")));
                     worldCreator.createWorld();
                 } catch (Exception e) {
                     TommyGenerator.getInstance().getLogger().log(Level.SEVERE, "World \"" + worldName + "\" couldn't be loaded! Error: " + e.getMessage());
@@ -128,26 +144,36 @@ public class WorldManager {
         }
     }
 
-    private void addWorldToList(String world) {
+    private void addWorldToList(World world) {
         reload();
-        List<String> worlds = cfg.getStringList("Worlds");
-        if(!worlds.contains(world)) {
-            worlds.add(world);
-            for (String s : worlds) {
-                cfg.set("Worlds." + s + ".Environment", Objects.requireNonNull(Bukkit.getWorld(s)).getEnvironment().name());
-                cfg.set("Worlds." + s + ".GameMode", "DISABLED");
-            }
-            save();
-        }
+        var id = world.getUID();
+        cfg.set("Worlds." + id + ".Name", world.getName());
+        cfg.set("Worlds." + id + ".Environment", world.getEnvironment().name());
+        cfg.set("Worlds." + id + ".GameMode", "DISABLED");
+        cfg.set("Worlds." + id + ".Entry", EntryMode.NOT_SET.toString());
+        save();
     }
 
-    private void removeWorldFromList(String world) {
+    private void removeWorldFromList(World world) {
         reload();
-        List<String> worlds = cfg.getStringList("Worlds");
-        worlds.remove(world);
-        cfg.set("Worlds." + world, null);
-        for (String s : worlds) {
-            cfg.set("Worlds." + s, Objects.requireNonNull(Bukkit.getWorld(s)).getEnvironment().name());
+        cfg.set("Worlds." + world.getUID(), null);
+        save();
+    }
+
+    private void duplicateWorldFromList(World world, World duplicate) {
+        reload();
+        var id = world.getUID();
+        var idDuplicate = duplicate.getUID();
+        if(!cfg.isSet("Worlds." + idDuplicate)) {
+            var path = "Worlds." + id;
+            var name = duplicate.getName();
+            var environment = getEnvironment(world);
+            var gameMode = getGameMode(world);
+            var entryMode = getEntryMode(world);
+            cfg.set("Worlds." + idDuplicate + ".Name", name);
+            cfg.set("Worlds." + idDuplicate + ".Environment", environment.name());
+            cfg.set("Worlds." + idDuplicate + ".GameMode", gameMode);
+            cfg.set("Worlds." + idDuplicate + ".Entry", entryMode.name());
         }
         save();
     }
@@ -155,26 +181,26 @@ public class WorldManager {
     private void setWorldGameMode(World world, GameMode gameMode) {
         reload();
         if(gameMode == null) {
-            cfg.set("Worlds." + world.getName() + ".GameMode", "DISABLED");
+            cfg.set("Worlds." + world.getUID() + ".GameMode", "DISABLED");
             save();
             return;
         }
-        cfg.set("Worlds." + world.getName() + ".GameMode", gameMode.name());
+        cfg.set("Worlds." + world.getUID() + ".GameMode", gameMode.name());
         save();
     }
 
     private void setWorldEntryMode(World world, Boolean bool) {
         if(bool) {
-            cfg.set("Worlds." + world.getName() + ".Entry", "ALLOWED");
+            cfg.set("Worlds." + world.getUID() + ".Entry", "ALLOWED");
             save();
             return;
         }
-        cfg.set("Worlds." + world.getName() + ".Entry", "DENIED");
+        cfg.set("Worlds." + world.getUID() + ".Entry", "DENIED");
         save();
     }
 
     private void editEffectFromList(World world, PotionEffectType potionEffectType) {
-        var path = "Worlds." + world.getName() + ".Effects";
+        var path = "Worlds." + world.getUID() + ".Effects";
         List<String> effects;
         if(!cfg.isSet(path)) {
             effects = new ArrayList<>();
@@ -183,7 +209,7 @@ public class WorldManager {
             save();
             return;
         }
-        effects = cfg.getStringList("Worlds." + world.getName() + ".Effects");
+        effects = cfg.getStringList("Worlds." + world.getUID() + ".Effects");
         if(effects.contains(potionEffectType.getName())) {
             effects.remove(potionEffectType.getName());
             cfg.set(path, effects);
@@ -209,7 +235,7 @@ public class WorldManager {
         }
         creator.environment(environment);
         creator.createWorld();
-        addWorldToList(creator.name());
+        addWorldToList(Objects.requireNonNull(Bukkit.getWorld(worldName)));
         player.sendMessage("§aCreating world.. Success!");
         TommyGenerator.getInstance().getGuiManager().openWorldListInventory(player);
     }
@@ -334,25 +360,25 @@ public class WorldManager {
     }
 
     public String getGameMode(World world) {
-        if(!cfg.isSet("Worlds." + world.getName() + ".GameMode")) {
+        if(!cfg.isSet("Worlds." + world.getUID() + ".GameMode")) {
             return "NOT SET";
         }
-        return cfg.getString("Worlds." + world.getName() + ".GameMode");
+        return cfg.getString("Worlds." + world.getUID() + ".GameMode");
     }
 
     public void deleteWorld(Player player, World world) {
         Bukkit.unloadWorld(world, false);
         if(!delDirectory(world.getWorldFolder())) {
             player.sendMessage("§aWorld §2" + world.getName() + " §awas successfully deleted.");
-            removeWorldFromList(world.getName());
+            removeWorldFromList(world);
             TommyGenerator.getInstance().getGuiManager().openWorldListInventory(player);
             return;
         }
-        player.sendMessage("§cWorld §4" + world.getName() + " §ccouldn't be deleted.");
+        player.sendMessage("§cWorld §4" + world.getUID() + " §ccouldn't be deleted.");
         TommyGenerator.getInstance().getGuiManager().openWorldListInventory(player);
     }
 
-    public void renameWorld(Player player, String oldWorldName, String newWorldName, World.Environment environment) {
+    public void renameWorld(Player player, World oldWorld, String newWorldName, World.Environment environment) {
         WorldCreator creator;
         try {
             creator = new WorldCreator(newWorldName);
@@ -362,18 +388,18 @@ public class WorldManager {
             return;
         }
 
-        player.sendMessage("§aUnloading the world §2" + oldWorldName + "§a...");
-        if(Objects.requireNonNull(Bukkit.getWorld(oldWorldName)).getPlayerCount() != 0) {
-            for(Player players : Objects.requireNonNull(Bukkit.getWorld(oldWorldName)).getPlayers()) {
+        player.sendMessage("§aUnloading the world §2" + oldWorld.getName() + "§a...");
+        if(oldWorld.getPlayerCount() != 0) {
+            for(Player players : oldWorld.getPlayers()) {
                 players.teleport(Objects.requireNonNull(Bukkit.getWorld("world")).getSpawnLocation());
             }
         }
-        Bukkit.unloadWorld(Objects.requireNonNull(Bukkit.getWorld(oldWorldName)), true);
+        Bukkit.unloadWorld(oldWorld, true);
         player.sendMessage("§aUnloaded world!");
 
         player.sendMessage("§aRenaming...");
-        removeWorldFromList(oldWorldName);
-        copyFolder(new File(oldWorldName), new File(newWorldName));
+        removeWorldFromList(oldWorld);
+        copyFolder(oldWorld.getWorldFolder(), new File(newWorldName));
         player.sendMessage("§aRenaming was successful!");
 
 
@@ -382,12 +408,12 @@ public class WorldManager {
         creator.environment(environment);
         var currentTimeMillis = System.currentTimeMillis();
         creator.createWorld();
-        addWorldToList(newWorldName);
+        addWorldToList(Objects.requireNonNull(Bukkit.getWorld(newWorldName)));
         player.sendMessage("§aLoading was successful!\n§aTime elapsed: " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
         player.sendMessage("§a§lRenaming was successful!");
 
         Bukkit.getScheduler().runTaskLater(TommyGenerator.getInstance(), () -> {
-            if(delDirectory(new File(oldWorldName))) {
+            if(delDirectory(oldWorld.getWorldFolder())) {
                 player.sendMessage("§cFolder could not be deleted!");
             }
         }, 20*20);
@@ -404,10 +430,10 @@ public class WorldManager {
     }
 
     public EntryMode getEntryMode(World world) {
-        if(!cfg.isSet("Worlds." + world.getName() + ".Entry")) {
+        if(!cfg.isSet("Worlds." + world.getUID() + ".Entry")) {
             return EntryMode.NOT_SET;
         }
-        return EntryMode.valueOf(cfg.getString("Worlds." + world.getName() + ".Entry"));
+        return EntryMode.valueOf(cfg.getString("Worlds." + world.getUID() + ".Entry"));
     }
 
     public void toggleEffect(Player player, World world, PotionEffectType potionEffectType) {
@@ -416,6 +442,34 @@ public class WorldManager {
     }
 
     public List<String> getActiveEffects(World world) {
-        return cfg.getStringList("Worlds." + world.getName() + ".Effects");
+        return cfg.getStringList("Worlds." + world.getUID() + ".Effects");
+    }
+
+    public void duplicateWorld(Player player, World world, String duplicateWorldName) {
+        WorldCreator creator;
+        try {
+            creator = new WorldCreator(duplicateWorldName);
+        } catch (IllegalArgumentException exception) {
+            player.sendMessage("§cFailed!\n§cError: " + exception.getMessage());
+            TommyGenerator.getInstance().getGuiManager().openMainInventory(player);
+            return;
+        }
+        if(duplicateFolder(Paths.get(world.getName()), Paths.get(duplicateWorldName))) {
+            creator.environment(getEnvironment(world));
+            player.sendMessage("§aDuplicating world...");
+            creator.createWorld();
+            player.sendMessage("§aWorld §2" + world.getName() + " §awas duplicated with the name §2" + duplicateWorldName);
+            duplicateWorldFromList(world, Objects.requireNonNull(Bukkit.getWorld(duplicateWorldName)));
+            guiManager.openWorldListInventory(player);
+            return;
+        }
+        player.sendMessage("§cWorld §c§l" + world.getName() + " §ccouldn't be duplicated!");
+        guiManager.openWorldListInventory(player);
+    }
+
+    public World.Environment getEnvironment(World world) {
+        if(!cfg.isSet("Worlds." + world.getUID() + ".Environment"))
+            return world.getEnvironment();
+        return World.Environment.valueOf(cfg.getString("Worlds." + world.getUID() + ".Environment"));
     }
 }

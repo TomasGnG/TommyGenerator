@@ -93,7 +93,6 @@ public class GUIManager {
         var renameWorld = new ItemBuilder(Material.PAPER).setKey("worldEditInv-renameWorld").setDisplayName("§f「 ✎ §cRename §f」").setLore("§8§o→ §c§oThis will rename the world!", "§8§o→ §c§oThe old directory will be deleted with a 20 sec delay to avoid problems!").build();
         var toggleGameMode = new ItemBuilder(Material.GOLDEN_PICKAXE).setKey("worldEditInv-toggleGameMode").setDisplayName("§f「 §aGameMode §f」").setLore("§8§o→ Toggles the gamemode of the world.", "§8§o→ Players gamemode will change to the world gamemode.", "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getGameMode(world)).build();
         var toggleEntry = new ItemBuilder(Material.ENDER_EYE).setKey("worldEditInv-toggleEntry").setDisplayName("§f「 ✓ §cEntry §f」").setLore("§8§o→ Toggles the entry mode for players without the permission", "§8§o→ Permission will be like this: tommygenerator.entry." + world.getName().toLowerCase(), "§8§o→ §f" + TommyGenerator.getInstance().getWorldManager().getEntryMode(world)).build();
-
         var editEffectsLore = new ArrayList<String>();
         editEffectsLore.add("§8§o→ Sets the effects for the world");
         editEffectsLore.add("§8§o→ Players will get the activated effects permanently when entering");
@@ -102,6 +101,7 @@ public class GUIManager {
             editEffectsLore.add("§8§o→ §f" + worldManager.getActiveEffects(world).get(i));
         }
         var editEffects = new ItemBuilder(Material.GLASS_BOTTLE).setKey("worldEditInv-editEffects").setDisplayName("§f「 §cEffects §f」").setLore(editEffectsLore.toArray(String[]::new)).build();
+        var duplicateWorld = new ItemBuilder(Material.GLOW_ITEM_FRAME).setKey("worldEditInv-duplicateWorld").setDisplayName("§f「 ✎ §cDuplicate §f」").setLore("§8§o→ Duplicate the world with a different name!").build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
@@ -111,6 +111,7 @@ public class GUIManager {
         inventory.setItem(inventory.getSize()-9, deleteWorld);
         inventory.setItem(inventory.getSize()-8, renameWorld);
         inventory.setItem(inventory.getSize()-7, toggleEntry);
+        inventory.setItem(inventory.getSize()-6, duplicateWorld);
         inventory.setItem(0, tpItem);
         inventory.setItem(1, lockTimeItem);
         inventory.setItem(2, lockWeatherItem);
@@ -146,7 +147,7 @@ public class GUIManager {
         player.openInventory(inventory);
     }
 
-    public void openWorldCreatorInventory(Player player, String worldName) {
+    public void openWorldCreatorInventory(Player player, String world) {
         var inventory = Bukkit.createInventory(null, 2*9, Component.text("Choose your world type..", DARK_GREEN));
 
         var normalWorld = new ItemBuilder(Material.GRASS_BLOCK).setKey("worldCreatorInv-normalWorld").setDisplayName("§aNormal").build();
@@ -161,7 +162,7 @@ public class GUIManager {
         inventory.setItem(0, normalWorld);
         inventory.setItem(1, netherWorld);
         inventory.setItem(2, endWorld);
-        inventory.setItem(9, new ItemBuilder(Material.PAPER).setKey("tg-defaultGlassItem").setDisplayName(worldName).build());
+        inventory.setItem(9, new ItemBuilder(Material.PAPER).setKey("tg-defaultGlassItem").setDisplayName(world).build());
 
         player.openInventory(inventory);
     }
@@ -171,10 +172,14 @@ public class GUIManager {
         player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldCreatorInvWorldNameInput-paperItem").setDisplayName("Your world name").build());
     }
 
-    public void openWorldEditInventoryRenameWorldInput(Player player, String worldName) {
+    public void openWorldEditInventoryRenameWorldInput(Player player, World world) {
         player.openAnvil(player.getLocation(), true);
-        player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldEditInvRenameWorldInput-paperItem").setKey(worldName).setDisplayName("Your new world name").build());
+        player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldEditInvRenameWorldInput-paperItem").setKey(world.getUID().toString()).setDisplayName("Your new world name").build());
+    }
 
+    public void openWorldEditInventoryDuplicateWorldInput(Player player, World world) {
+        player.openAnvil(player.getLocation(), true);
+        player.getOpenInventory().setItem(0, new ItemBuilder(Material.PAPER).setKey("worldEditInvDuplicateWorldInput-paperItem").setKey(world.getUID().toString()).setDisplayName("Duplicate world name").build());
     }
 
     public void openPortalChooseWorldInventory(Player player) {
