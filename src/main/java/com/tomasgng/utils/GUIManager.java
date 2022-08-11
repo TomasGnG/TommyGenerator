@@ -102,6 +102,7 @@ public class GUIManager {
         }
         var editEffects = new ItemBuilder(Material.GLASS_BOTTLE).setKey("worldEditInv-editEffects").setDisplayName("§f「 §cEffects §f」").setLore(editEffectsLore.toArray(String[]::new)).build();
         var duplicateWorld = new ItemBuilder(Material.GLOW_ITEM_FRAME).setKey("worldEditInv-duplicateWorld").setDisplayName("§f「 ✎ §cDuplicate §f」").setLore("§8§o→ Duplicate the world with a different name!").build();
+        var backupItem = new ItemBuilder(Material.BOOKSHELF).setKey("worldEditInv-backupItem").setDisplayName("§f「 §2Backup §f」").setLore("§8§o→ Create a backup from this world", "§8§o→ The backup will be saved in the worlds folder as WorldName-Backup.zip!").build();
 
         for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, glass);
@@ -112,6 +113,7 @@ public class GUIManager {
         inventory.setItem(inventory.getSize()-8, renameWorld);
         inventory.setItem(inventory.getSize()-7, toggleEntry);
         inventory.setItem(inventory.getSize()-6, duplicateWorld);
+        inventory.setItem(inventory.getSize()-5, backupItem);
         inventory.setItem(0, tpItem);
         inventory.setItem(1, lockTimeItem);
         inventory.setItem(2, lockWeatherItem);

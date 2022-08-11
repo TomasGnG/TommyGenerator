@@ -1,6 +1,7 @@
 package com.tomasgng.utils;
 
 import com.tomasgng.TommyGenerator;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
+
+import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 public class WorldManager {
 
@@ -132,7 +136,9 @@ public class WorldManager {
         for (String s : list) {
             var worldName = cfg.getString("Worlds." + s.split("\\.")[0] + ".Name");
             var id = s.split("\\.")[0];
-            assert worldName != null;
+            if(worldName == null)  {
+                continue;
+            }
             worldCreator = new WorldCreator(worldName);
             if(!worldName.equalsIgnoreCase("world") && !worldName.equalsIgnoreCase("world_nether") && !worldName.equalsIgnoreCase("world_the_end")) {
                 try {
@@ -472,5 +478,31 @@ public class WorldManager {
         if(!cfg.isSet("Worlds." + world.getUID() + ".Environment"))
             return world.getEnvironment();
         return World.Environment.valueOf(cfg.getString("Worlds." + world.getUID() + ".Environment"));
+    }
+
+    public void backupWorld(Player player, World world) {
+        var source = world.getWorldFolder().getPath();
+        var destinationPath = world.getWorldFolder().getPath() + "/" + world.getName() + "-Backup.zip";
+        var successMSG = "The world " + world.getName() + " was successfully backed up. \n Zip destination: " + destinationPath;
+
+        player.sendMessage(Component.text("The backup process will begin shortly...", GREEN));
+        player.sendMessage(Component.text("Saving world...", GREEN));
+        world.save();
+        player.sendMessage(Component.text("Saved the world.", GREEN));
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(TommyGenerator.getInstance(), () -> {
+            player.sendMessage(Component.text("Trying to save the world folder into the zip file..", GREEN));
+            try {
+                var oldBackup = new File(destinationPath);
+                if(oldBackup.exists() && oldBackup.delete()) {
+                    player.sendMessage(Component.text("Deleted old backup file."));
+                }
+                ZipManager.zip(source, destinationPath);
+                player.sendMessage(Component.text(successMSG, GREEN));
+            } catch (Exception e) {
+                player.sendMessage(Component.text(e.getMessage(), RED));
+            }
+        }, 20L);
+        new WorldCreator(world.getName()).createWorld();
     }
 }

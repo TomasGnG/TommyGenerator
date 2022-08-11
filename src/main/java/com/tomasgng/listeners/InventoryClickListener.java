@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
@@ -32,121 +33,127 @@ public class InventoryClickListener implements Listener {
         if(event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null) {
             var persistentContainer = event.getCurrentItem().getItemMeta().getPersistentDataContainer();
             var world = Bukkit.getWorld(inventoryView.getTitle().substring(2));
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainMenuItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("mainMenuItem", persistentContainer)) {
                 event.setCancelled(true);
                 guiManager.openMainInventory(player);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-tpItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-tpItem", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.teleportToWorldSpawn(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "tg-defaultGlassItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("tg-defaultGlassItem", persistentContainer)) {
                 event.setCancelled(true);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-lockTimeItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-lockTimeItem", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.lockCurrentTime(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainInv-createItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("mainInv-createItem", persistentContainer)) {
                 event.setCancelled(true);
                 guiManager.openWorldCreatorInventoryWorldNameInput(player);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInv-normalWorld"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldCreatorInv-normalWorld", persistentContainer)) {
                 event.setCancelled(true);
                 Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> worldManager.createNewWorld(player, Objects.requireNonNull(Objects.requireNonNull(event.getClickedInventory()).getItem(9)).getItemMeta().getDisplayName(), World.Environment.NORMAL));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInv-netherWorld"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldCreatorInv-netherWorld", persistentContainer)) {
                 event.setCancelled(true);
                 Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> worldManager.createNewWorld(player, Objects.requireNonNull(Objects.requireNonNull(event.getClickedInventory()).getItem(9)).getItemMeta().getDisplayName(), World.Environment.NETHER));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInv-endWorld"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldCreatorInv-endWorld", persistentContainer)) {
                 event.setCancelled(true);
                 Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> worldManager.createNewWorld(player, Objects.requireNonNull(Objects.requireNonNull(event.getClickedInventory()).getItem(9)).getItemMeta().getDisplayName(), World.Environment.THE_END));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-lockWeatherItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-lockWeatherItem", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.lockCurrentWeather(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-setWorldSpawnItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-setWorldSpawnItem", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.setWorldSpawn(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-setAnimalSpawningItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-setAnimalSpawningItem", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.toggleAnimalSpawning(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-setMonsterSpawningItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-setMonsterSpawningItem", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.toggleMonsterSpawning(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-togglePvPItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-togglePvPItem", persistentContainer)) {
                 event.setCancelled(true);
                 worldManager.togglePvP(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-toggleDifficulty"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-toggleDifficulty", persistentContainer)) {
                 event.setCancelled(true);
                 assert world != null;
                 worldManager.toggleDifficulty(player, world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-deleteWorld"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-deleteWorld", persistentContainer)) {
                 event.setCancelled(true);
                 worldManager.deleteWorld(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-renameWorld"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-renameWorld", persistentContainer)) {
                 event.setCancelled(true);
                 guiManager.openWorldEditInventoryRenameWorldInput(player, Objects.requireNonNull(Bukkit.getWorld(event.getView().getTitle().substring(2))));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-toggleGameMode"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-toggleGameMode", persistentContainer)) {
                 event.setCancelled(true);
                 worldManager.toggleGameMode(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-toggleEntry"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-toggleEntry", persistentContainer)) {
                 event.setCancelled(true);
                 worldManager.toggleEntry(player, Bukkit.getWorld(event.getView().getTitle().substring(2)));
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-editEffects"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-editEffects", persistentContainer)) {
                 event.setCancelled(true);
                 guiManager.openWorldEditEffectsInventory(player, event.getView().getTitle(), world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditEffectsInv-effectType"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditEffectsInv-effectType", persistentContainer)) {
                 event.setCancelled(true);
                 worldManager.toggleEffect(player, world, PotionEffectType.getByName(event.getCurrentItem().getItemMeta().getDisplayName().substring(2)));
                 guiManager.openWorldEditEffectsInventory(player, event.getView().getTitle(), world);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainInv-portalItem"), PersistentDataType.DOUBLE)) {
+            if(containsKey("mainInv-portalItem", persistentContainer)) {
                 event.setCancelled(true);
                 guiManager.openPortalChooseWorldInventory(player);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "portalChooseWorldInv-World"), PersistentDataType.DOUBLE)) {
+            if(containsKey("portalChooseWorldInv-World", persistentContainer)) {
                 event.setCancelled(true);
                 TommyGenerator.getInstance().getPortalManager().togglePlayersCreatingState(player, Bukkit.getWorld(event.getCurrentItem().getItemMeta().getDisplayName().substring(2)), false);
             }
-            if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInv-duplicateWorld"), PersistentDataType.DOUBLE)) {
+            if(containsKey("worldEditInv-duplicateWorld", persistentContainer)) {
                 event.setCancelled(true);
                 guiManager.openWorldEditInventoryDuplicateWorldInput(player, Objects.requireNonNull(Bukkit.getWorld(event.getView().getTitle().substring(2))));
+            }
+            if(containsKey("worldEditInv-backupItem", persistentContainer)) {
+                event.setCancelled(true);
+
+                worldManager.backupWorld(player, Objects.requireNonNull(Bukkit.getWorld(event.getView().getTitle().substring(2))));
             }
         }
 
         if(event.getInventory().getType().equals(InventoryType.ANVIL)) {
             for (int i = 0; i < 3; i++) {
                 if(event.getInventory().getItem(i) != null) {
-                    if(event.getInventory().getItem(i) != null && Objects.requireNonNull(event.getInventory().getItem(i)).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+                    var persistentContainer = event.getInventory().getItem(i).getItemMeta().getPersistentDataContainer();
+                    if(containsKey("worldCreatorInvWorldNameInput-paperItem", persistentContainer)) {
                         event.setCancelled(true);
-                        if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+                        if(event.getSlot() == 2 && event.getCurrentItem() != null && containsKey("worldCreatorInvWorldNameInput-paperItem", persistentContainer)) {
                             var itemR = event.getCurrentItem();
                             Objects.requireNonNull(event.getClickedInventory()).clear();
                             guiManager.openWorldCreatorInventory((Player) event.getWhoClicked(), itemR.getItemMeta().getDisplayName());
                         }
                     }
-                    if(event.getInventory().getItem(i) != null && Objects.requireNonNull(event.getInventory().getItem(i)).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvRenameWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey("worldEditInvRenameWorldInput-paperItem", persistentContainer)) {
                         event.setCancelled(true);
-                        if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvRenameWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                        if(event.getSlot() == 2 && event.getCurrentItem() != null && containsKey("worldEditInvRenameWorldInput-paperItem", event.getCurrentItem().getItemMeta().getPersistentDataContainer())) {
                             var itemR = event.getCurrentItem();
                             Objects.requireNonNull(event.getClickedInventory()).clear();
                             Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> {
@@ -161,9 +168,9 @@ public class InventoryClickListener implements Listener {
                             });
                         }
                     }
-                    if(event.getInventory().getItem(i) != null && Objects.requireNonNull(event.getInventory().getItem(i)).getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvDuplicateWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey("worldEditInvDuplicateWorldInput-paperItem", persistentContainer)) {
                         event.setCancelled(true);
-                        if(event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvDuplicateWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                        if(event.getSlot() == 2 && event.getCurrentItem() != null && containsKey("worldEditInvDuplicateWorldInput-paperItem", event.getCurrentItem().getItemMeta().getPersistentDataContainer())) {
                             var itemR = event.getCurrentItem();
                             Objects.requireNonNull(event.getClickedInventory()).clear();
                             Bukkit.getScheduler().runTask(TommyGenerator.getInstance(), () -> {
@@ -189,10 +196,10 @@ public class InventoryClickListener implements Listener {
             if(event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null) {
                 if(event.getCurrentItem().getItemMeta().displayName() != null) {
                     var persistentContainer = event.getCurrentItem().getItemMeta().getPersistentDataContainer();
-                    if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainInv-worldsItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey("mainInv-worldsItem", persistentContainer)) {
                         guiManager.openWorldListInventory((Player) event.getWhoClicked());
                     }
-                    if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainMenuItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey("mainMenuItem", persistentContainer)) {
                         guiManager.openMainInventory((Player) event.getWhoClicked());
                     }
                 }
@@ -204,7 +211,7 @@ public class InventoryClickListener implements Listener {
             if(event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null) {
                 if(event.getCurrentItem().getItemMeta().displayName() != null) {
                     var persistentContainer = event.getCurrentItem().getItemMeta().getPersistentDataContainer();
-                    if(persistentContainer.has(new NamespacedKey(TommyGenerator.getInstance(), "mainMenuItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey("mainMenuItem", persistentContainer)) {
                         guiManager.openMainInventory((Player) event.getWhoClicked());
                     }
                     if(!event.getCurrentItem().getType().isAir() && !event.getCurrentItem().getType().equals(Material.GRAY_STAINED_GLASS_PANE) && !event.getCurrentItem().getType().equals(Material.PLAYER_HEAD)) {
@@ -214,5 +221,9 @@ public class InventoryClickListener implements Listener {
 
             }
         }
+    }
+
+    private boolean containsKey(String key, PersistentDataContainer container) {
+        return container.has(new NamespacedKey(TommyGenerator.getInstance(), key), PersistentDataType.DOUBLE);
     }
 }

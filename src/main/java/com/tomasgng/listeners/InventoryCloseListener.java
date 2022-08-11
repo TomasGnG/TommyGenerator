@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Objects;
@@ -18,10 +19,13 @@ public class InventoryCloseListener implements Listener {
             for (int i = 0; i < 3; i++) {
                 if(event.getInventory().getItem(i) != null) {
                     var container = Objects.requireNonNull(event.getInventory().getItem(i)).getItemMeta().getPersistentDataContainer();
-                    if(container.has(new NamespacedKey(TommyGenerator.getInstance(), "worldCreatorInvWorldNameInput-paperItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey( "worldCreatorInvWorldNameInput-paperItem", container)) {
                         event.getInventory().clear();
                     }
-                    if(container.has(new NamespacedKey(TommyGenerator.getInstance(), "worldEditInvRenameWorldInput-paperItem"), PersistentDataType.DOUBLE)) {
+                    if(containsKey("worldEditInvRenameWorldInput-paperItem", container)) {
+                        event.getInventory().clear();
+                    }
+                    if(containsKey("worldEditInvDuplicateWorldInput-paperItem", container)) {
                         event.getInventory().clear();
                     }
                 }
@@ -29,6 +33,10 @@ public class InventoryCloseListener implements Listener {
 
 
         }
+    }
+
+    private boolean containsKey(String key, PersistentDataContainer container) {
+        return container.has(new NamespacedKey(TommyGenerator.getInstance(), key), PersistentDataType.DOUBLE);
     }
 
 }

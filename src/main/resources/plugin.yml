@@ -1,6 +1,6 @@
 name: TommyGenerator
-version: 2.2
-api-version: 1.18
+version: 2.3
+api-version: 1.19
 main: com.tomasgng.TommyGenerator
 author: TomasGnG
 
